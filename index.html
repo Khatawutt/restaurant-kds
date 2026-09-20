@@ -17,7 +17,7 @@
         <header class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
             <div>
                 <h1 class="text-3xl font-bold tracking-wide text-amber-500">🍳 Kitchen Display System (KDS)</h1>
-                <p class="text-gray-400 text-sm mt-1">ระบบแสดงรายการอาหารและเครื่องดื่มสำหรับห้องครัว</p>
+                <p class="text-gray-400 text-sm mt-1">ระบบแสดงรายการอาหารและเครื่องดื่มสำหรับห้องครัว (มีเสียงเตือนอเดอร์ใหม่)</p>
             </div>
             <div class="flex items-center gap-4">
                 <span id="status-indicator" class="px-3 py-1 bg-emerald-900/50 text-emerald-400 border border-emerald-700 text-xs rounded-full animate-pulse">● เชื่อมต่อแล้ว</span>
@@ -36,12 +36,50 @@
     </div>
 
     <script>
-        // ⚠️ นำ URL จาก Google Apps Script (Web App URL) มาใส่แทนที่ข้อความนี้
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzGnt4q8Y8tyYGDYz6HLYuedZO1oqI4_YQzrJnAcwPrekjdaiYeZkoJkaLv1o-NOJA/exec';
+        // ⚠️ แทนที่ด้วย Web App URL ของ Google Apps Script ที่ Deploy ล่าสุด
+        const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
 
-        // โหลดข้อมูลอเดอร์อัตโนมัติทุกๆ 10 วินาที
+        let lastPendingCount = -1;
+
+        // โหลดข้อมูลอัตโนมัติทุกๆ 10 วินาที
         setInterval(loadOrders, 10000);
         window.onload = loadOrders;
+
+        // ฟังก์ชันสร้างเสียงกระดิ่ง "ติ๊งน๊อง" (Ding-Dong)
+        function playDingDongSound() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // เสียงที่ 1: "ติ๊ง" (เสียงสูง)
+                const osc1 = audioCtx.createOscillator();
+                const gain1 = audioCtx.createGain();
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(880, audioCtx.currentTime); // โน้ต A5
+                gain1.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain1.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+                osc1.connect(gain1);
+                gain1.connect(audioCtx.destination);
+                osc1.start();
+                osc1.stop(audioCtx.currentTime + 0.5);
+
+                // เสียงที่ 2: "น๊อง" (เสียงต่ำกว่านิดหน่อย ตามหลัง 0.3 วินาที)
+                setTimeout(() => {
+                    const osc2 = audioCtx.createOscillator();
+                    const gain2 = audioCtx.createGain();
+                    osc2.type = 'sine';
+                    osc2.frequency.setValueAtTime(659.25, audioCtx.currentTime); // โน้ต E5
+                    gain2.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
+                    osc2.connect(gain2);
+                    gain2.connect(audioCtx.destination);
+                    osc2.start();
+                    osc2.stop(audioCtx.currentTime + 0.8);
+                }, 300);
+
+            } catch (e) {
+                console.log('Audio Context Error:', e);
+            }
+        }
 
         async function loadOrders() {
             try {
@@ -49,11 +87,22 @@
                 const result = await response.json();
                 
                 if (result.status === 'success') {
-                    renderOrders(result.data);
+                    const orders = result.data;
+                    
+                    // นับจำนวนอเดอร์ที่อยู่ในสถานะ Pending (รอดำเนินการ)
+                    const currentPendingCount = orders.filter(o => o.status === 'Pending').length;
+
+                    // ถ้ามีจำนวนอเดอร์ Pending เพิ่มขึ้น ให้เล่นเสียงเตือน
+                    if (lastPendingCount !== -1 && currentPendingCount > lastPendingCount) {
+                        playDingDongSound();
+                    }
+                    lastPendingCount = currentPendingCount;
+
+                    renderOrders(orders);
                 }
             } catch (error) {
                 console.error('Error fetching orders:', error);
-                document.getElementById('status-indicator').className = 'px-3 py-1 bg-rose-900/50 text-rose-400 border border-rose-700 text-xs rounded-full';
+                document.getElementById('status-indicatorclassName = 'px-3 py-1 bg-rose-900/50 text-rose-400 border border-rose-700 text-xs rounded-full';
                 document.getElementById('status-indicator').innerText = '● ขาดการเชื่อมต่อ';
             }
         }
@@ -66,7 +115,7 @@
             }
 
             container.innerHTML = orders.map((order, index) => `
-                <div class="bg-gray-800 border ${order.status === 'Ready' ? 'border-emerald-600/50' : 'border-gray-700'} rounded-xl p-5 shadow-xl flex flex-col justify-between">
+                <div class="bg-gray-800 border ${order.status === 'Pending' ? 'border-amber-500 shadow-amber-500/10' : 'border-gray-700'} rounded-xl p-5 shadow-xl flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-start mb-4">
                             <div>
@@ -74,7 +123,7 @@
                                 <h3 class="text-2xl font-bold text-white">${order.room}</h3>
                             </div>
                             <span class="px-3 py-1 text-xs font-semibold rounded-full ${
-                                order.status === 'Pending' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                                order.status === 'Pending' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse' :
                                 order.status === 'Cooking' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
                                 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                             }">${order.status}</span>
@@ -82,6 +131,7 @@
                         
                         <div class="bg-gray-900/60 rounded-lg p-3 mb-4 border border-gray-800">
                             <p class="text-sm text-gray-300 whitespace-pre-line">${order.menu}</p>
+                            <p class="text-xs text-amber-400/80 mt-2 font-semibold">ราคา: ฿${order.price}</p>
                         </div>
                     </div>
 
