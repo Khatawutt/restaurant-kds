@@ -3,163 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KDS - Kitchen Display System</title>
+    <title>สั่งอาหาร - Customer Page</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Prompt', sans-serif; }
-    </style>
+    <style> body { font-family: 'Prompt', sans-serif; } </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen p-6">
+<body class="bg-gray-100 min-h-screen p-6">
 
-    <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <header class="flex justify-between items-center mb-8 border-b border-gray-800 pb-4">
-            <div>
-                <h1 class="text-3xl font-bold tracking-wide text-amber-500">🍳 Kitchen Display System (KDS)</h1>
-                <p class="text-gray-400 text-sm mt-1">ระบบแสดงรายการอาหารและเครื่องดื่มสำหรับห้องครัว (มีเสียงเตือนอเดอร์ใหม่)</p>
-            </div>
-            <div class="flex items-center gap-4">
-                <span id="status-indicator" class="px-3 py-1 bg-emerald-900/50 text-emerald-400 border border-emerald-700 text-xs rounded-full animate-pulse">● เชื่อมต่อแล้ว</span>
-                <button onclick="loadOrders()" class="bg-gray-800 hover:bg-gray-700 text-gray-200 px-4 py-2 rounded-lg text-sm font-medium transition border border-gray-700">
-                    🔄 รีเฟรชข้อมูล
-                </button>
-            </div>
-        </header>
-
-        <!-- Orders Container -->
-        <div id="orders-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="col-span-full text-center py-20 text-gray-500">
-                กำลังโหลดรายการอเดอร์...
-            </div>
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4">📝 ฟอร์มสั่งอาหาร (จำลอง)</h2>
+        
+        <!-- ช่องกรอกเลขโต๊ะ / ห้อง -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">โต๊ะ / ห้อง:</label>
+            <input type="text" id="room" placeholder="เช่น โต๊ะ 5 หรือ ห้อง VIP 1" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
         </div>
+
+        <!-- ช่องกรอกรายการอาหาร -->
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2">รายการอาหาร:</label>
+            <textarea id="menu" rows="3" placeholder="เช่น ข้าวผัดกุ้ง 1, น้ำอัดลม 2" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+        </div>
+
+        <!-- ช่องกรอกราคารวม -->
+        <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-bold mb-2">ราคารวม (บาท):</label>
+            <input type="number" id="price" placeholder="350" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+        </div>
+
+        <!-- ปุ่มยืนยันการสั่งซื้อ (หลังโอนเงินเสร็จ) -->
+        <button onclick="sendOrderToKitchen()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-4 rounded-lg transition shadow-md">
+            ✅ ยืนยันการชำระเงินและสั่งอาหาร
+        </button>
     </div>
 
+    <!-- ส่วนของ Script สำหรับส่งข้อมูล -->
     <script>
-        // ⚠️ แทนที่ด้วย Web App URL ของ Google Apps Script ที่ Deploy ล่าสุด
-        const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+        // ⚠️ สำคัญ: นำ Web App URL ของ Google Apps Script มาใส่ตรงนี้
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzGnt4q8Y8tyYGDYz6HLYuedZO1oqI4_YQzrJnAcwPrekjdaiYeZkoJkaLv1o-NOJA/exec';
 
-        let lastPendingCount = -1;
+        async function sendOrderToKitchen() {
+            // ดึงค่าจากฟอร์มหน้าเว็บ
+            const roomValue = document.getElementById('room').value.trim();
+            const menuValue = document.getElementById('menu').value.trim();
+            const priceValue = document.getElementById('price').value.trim();
 
-        // โหลดข้อมูลอัตโนมัติทุกๆ 10 วินาที
-        setInterval(loadOrders, 10000);
-        window.onload = loadOrders;
-
-        // ฟังก์ชันสร้างเสียงกระดิ่ง "ติ๊งน๊อง" (Ding-Dong)
-        function playDingDongSound() {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // เสียงที่ 1: "ติ๊ง" (เสียงสูง)
-                const osc1 = audioCtx.createOscillator();
-                const gain1 = audioCtx.createGain();
-                osc1.type = 'sine';
-                osc1.frequency.setValueAtTime(880, audioCtx.currentTime); // โน้ต A5
-                gain1.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                gain1.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
-                osc1.connect(gain1);
-                gain1.connect(audioCtx.destination);
-                osc1.start();
-                osc1.stop(audioCtx.currentTime + 0.5);
-
-                // เสียงที่ 2: "น๊อง" (เสียงต่ำกว่านิดหน่อย ตามหลัง 0.3 วินาที)
-                setTimeout(() => {
-                    const osc2 = audioCtx.createOscillator();
-                    const gain2 = audioCtx.createGain();
-                    osc2.type = 'sine';
-                    osc2.frequency.setValueAtTime(659.25, audioCtx.currentTime); // โน้ต E5
-                    gain2.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                    gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
-                    osc2.connect(gain2);
-                    gain2.connect(audioCtx.destination);
-                    osc2.start();
-                    osc2.stop(audioCtx.currentTime + 0.8);
-                }, 300);
-
-            } catch (e) {
-                console.log('Audio Context Error:', e);
-            }
-        }
-
-        async function loadOrders() {
-            try {
-                const response = await fetch(`${SCRIPT_URL}?action=getOrders`);
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    const orders = result.data;
-                    
-                    // นับจำนวนอเดอร์ที่อยู่ในสถานะ Pending (รอดำเนินการ)
-                    const currentPendingCount = orders.filter(o => o.status === 'Pending').length;
-
-                    // ถ้ามีจำนวนอเดอร์ Pending เพิ่มขึ้น ให้เล่นเสียงเตือน
-                    if (lastPendingCount !== -1 && currentPendingCount > lastPendingCount) {
-                        playDingDongSound();
-                    }
-                    lastPendingCount = currentPendingCount;
-
-                    renderOrders(orders);
-                }
-            } catch (error) {
-                console.error('Error fetching orders:', error);
-                document.getElementById('status-indicatorclassName = 'px-3 py-1 bg-rose-900/50 text-rose-400 border border-rose-700 text-xs rounded-full';
-                document.getElementById('status-indicator').innerText = '● ขาดการเชื่อมต่อ';
-            }
-        }
-
-        function renderOrders(orders) {
-            const container = document.getElementById('orders-container');
-            if (!orders || orders.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500">ไม่มีอเดอร์ค้างในขณะนี้</div>`;
+            // ตรวจสอบว่ากรอกข้อมูลครบไหม
+            if (!roomValue || !menuValue || !priceValue) {
+                alert('กรุณากรอกข้อมูลให้ครบถ้วนก่อนสั่งอาหาร');
                 return;
             }
 
-            container.innerHTML = orders.map((order, index) => `
-                <div class="bg-gray-800 border ${order.status === 'Pending' ? 'border-amber-500 shadow-amber-500/10' : 'border-gray-700'} rounded-xl p-5 shadow-xl flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <span class="text-xs text-gray-400 uppercase tracking-wider">โต๊ะ / ห้อง</span>
-                                <h3 class="text-2xl font-bold text-white">${order.room}</h3>
-                            </div>
-                            <span class="px-3 py-1 text-xs font-semibold rounded-full ${
-                                order.status === 'Pending' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse' :
-                                order.status === 'Cooking' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-                                'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                            }">${order.status}</span>
-                        </div>
-                        
-                        <div class="bg-gray-900/60 rounded-lg p-3 mb-4 border border-gray-800">
-                            <p class="text-sm text-gray-300 whitespace-pre-line">${order.menu}</p>
-                            <p class="text-xs text-amber-400/80 mt-2 font-semibold">ราคา: ฿${order.price}</p>
-                        </div>
-                    </div>
+            // จัดรูปแบบข้อมูลที่จะส่ง
+            const orderData = {
+                action: 'addNewOrder',
+                room: roomValue,
+                menu: menuValue,
+                price: Number(priceValue)
+            };
 
-                    <div class="flex justify-between items-center pt-3 border-t border-gray-700/50 text-xs text-gray-400">
-                        <span>เวลา: ${new Date(order.timestamp).toLocaleTimeString('th-TH')}</span>
-                        <div class="flex gap-2">
-                            ${order.status === 'Pending' ? `<button onclick="updateStatus(${index}, 'Cooking')" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded font-medium transition">กำลังทำ</button>` : ''}
-                            ${order.status !== 'Completed' ? `<button onclick="updateStatus(${index}, 'Completed')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded font-medium transition">เสร็จสิ้น</button>` : `<span class="text-emerald-400 font-medium">✓ เสร็จแล้ว</span>`}
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function updateStatus(orderIndex, newStatus) {
             try {
+                // แสดงสถานะกำลังส่ง
+                event.target.disabled = true;
+                event.target.innerText = 'กำลังส่งอเดอร์เข้าครัว...';
+
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'updateStatus', index: orderIndex, status: newStatus }),
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                    body: JSON.stringify(orderData),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' } // ป้องกัน CORS บน Google Apps Script
                 });
+
                 const result = await response.json();
+                
                 if (result.status === 'success') {
-                    loadOrders();
+                    alert('🎉 สั่งอาหารสำเร็จ! ออเดอร์ถูกส่งเข้าห้องครัวและบันทึกเรียบร้อยแล้ว');
+                    
+                    // เคลียร์ฟอร์มหลังสั่งซื้อสำเร็จ
+                    document.getElementById('room').value = '';
+                    document.getElementById('menu').value = '';
+                    document.getElementById('price').value = '';
+                } else {
+                    alert('เกิดข้อผิดพลาดจากระบบ: ' + result.message);
                 }
             } catch (error) {
-                console.error('Error updating status:', error);
-                alert('ไม่สามารถอัปเดตสถานะได้');
+                console.error('Error:', error);
+                alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาลองใหม่อีกครั้ง');
+            } finally {
+                // คืนค่าปุ่มกด
+                event.target.disabled = false;
+                event.target.innerText = '✅ ยืนยันการชำระเงินและสั่งอาหาร';
             }
         }
     </script>
