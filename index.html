@@ -30,7 +30,11 @@
             <button id="audio-btn" onclick="enableAudio()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow flex items-center gap-2 transition">
                 <span id="audio-icon">🔔</span> <span id="audio-status">เปิดเสียงเตือน</span>
             </button>
-            
+
+            <button onclick="openSheet()" title="กดค้างไว้หรือคลิกขวาเพื่อเปลี่ยนลิงก์" oncontextmenu="event.preventDefault(); setSheetUrl()" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow flex items-center gap-2 transition">
+                📊 <span>เปิด Sheets</span>
+            </button>
+
             <div class="text-right">
                 <span id="order-count" class="bg-amber-500 text-gray-950 font-bold px-3 py-1 rounded-full text-xs">ออเดอร์ค้าง: 0</span>
                 <p id="last-update" class="text-[10px] text-gray-400 mt-1">อัปเดตล่าสุด: -</p>
@@ -46,6 +50,10 @@
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzGnt4q8Y8tyYGDYz6HLYuedZO1oqI4_YQzrJnAcwPrekjdaiYeZkoJkaLv1o-NOJA/exec';
+        // ลิงก์ Google Sheets ที่เก็บออเดอร์ — ใส่ตรงนี้เพื่อให้ทุกเครื่องใช้ลิงก์เดียวกัน
+        // ถ้าเว้นว่าง ปุ่ม "เปิด Sheets" จะถามลิงก์ครั้งแรกแล้วจำไว้ในเครื่องนั้น
+        const SHEET_URL = '';
+        const SHEET_URL_KEY = 'kds_sheet_url';
         let previousOrderCount = -1;
         let audioContext = null;
 
@@ -83,6 +91,27 @@
             document.getElementById('audio-btn').className = "bg-green-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow flex items-center gap-2";
             document.getElementById('audio-icon').innerText = '🔊';
             document.getElementById('audio-status').innerText = 'เปิดเสียงเตือนแล้ว';
+        }
+
+        function getSheetUrl() {
+            if (SHEET_URL) return SHEET_URL;
+            try { return localStorage.getItem(SHEET_URL_KEY) || ''; } catch (e) { return ''; }
+        }
+
+        function setSheetUrl() {
+            const url = (prompt('วางลิงก์ Google Sheets ที่เก็บออเดอร์:', getSheetUrl()) || '').trim();
+            if (!url) return '';
+            if (!url.startsWith('https://docs.google.com/spreadsheets/')) {
+                alert('ลิงก์ต้องขึ้นต้นด้วย https://docs.google.com/spreadsheets/');
+                return '';
+            }
+            try { localStorage.setItem(SHEET_URL_KEY, url); } catch (e) {}
+            return url;
+        }
+
+        function openSheet() {
+            const url = getSheetUrl() || setSheetUrl();
+            if (url) window.open(url, '_blank', 'noopener');
         }
 
         async function fetchOrders() {
