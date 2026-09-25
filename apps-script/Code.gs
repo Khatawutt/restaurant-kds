@@ -23,13 +23,15 @@ function doGet(e) {
     })).filter(o => o.menu);
     return json({ status: 'success', orders });
   }
-  return json({ status: 'error', message: 'unknown action' });
+  // เปิด URL /exec ในเบราว์เซอร์เพื่อเช็กว่าสคริปต์ใหม่ทำงานและเจอแท็บถูกต้อง
+  return json({ status: 'success', message: 'KDS backend OK', sheet: getSheet().getName() });
 }
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
+    if (!e || !e.postData) return json({ status: 'error', message: 'no data' });
     const data = JSON.parse(e.postData.contents);
     const sheet = getSheet();
     if (data.action === 'updateStatus') {
