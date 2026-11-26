@@ -9,9 +9,52 @@
     <style>
         body { font-family: 'Prompt', sans-serif; }
         .order-card { animation: slideDown 0.3s ease-out; }
+        #print-ticket { display: none; }
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        @media print {
+            @page { margin: 4mm; }
+            body.printing-order {
+                background: #fff !important;
+                color: #000 !important;
+                min-height: 0 !important;
+                padding: 0 !important;
+            }
+            body.printing-order > :not(#print-ticket) { display: none !important; }
+            body.printing-order #print-ticket {
+                display: block !important;
+                width: 100%;
+                max-width: 72mm;
+                margin: 0 auto;
+                color: #000;
+                font: 11pt/1.35 Arial, "Noto Sans Thai", sans-serif;
+            }
+            #print-ticket .ticket-header {
+                border-bottom: 1px dashed #000;
+                font-size: 15pt;
+                font-weight: 700;
+                margin-bottom: 3mm;
+                padding-bottom: 3mm;
+                text-align: center;
+            }
+            #print-ticket .ticket-meta {
+                display: flex;
+                justify-content: space-between;
+                gap: 4mm;
+                margin: 2mm 0;
+            }
+            #print-ticket .ticket-items {
+                border-bottom: 1px dashed #000;
+                border-top: 1px dashed #000;
+                margin-top: 3mm;
+                padding: 2mm 0;
+            }
+            #print-ticket .ticket-items ol { margin: 2mm 0; padding-left: 5mm; }
+            #print-ticket .ticket-items li { margin: 1mm 0; overflow-wrap: anywhere; }
+            #print-ticket .ticket-quantity { font-weight: 700; white-space: nowrap; }
+            #print-ticket .ticket-note { margin-top: 3mm; text-align: center; }
         }
     </style>
 </head>
@@ -50,6 +93,8 @@
         </div>
     </main>
 
+    <section id="print-ticket" aria-hidden="true"></section>
+
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqT1lS6nhzEWxPLcOPvy-VU1GBuDLcd-XON3H5o1IG1PfiBdgukNV7AFyhqtSXxcDj/exec';
         // ลิงก์ Google Sheets ที่เก็บออเดอร์ — ใส่ตรงนี้เพื่อให้ทุกเครื่องใช้ลิงก์เดียวกัน
@@ -58,6 +103,73 @@
         const SHEET_URL_KEY = 'kds_sheet_url';
         let previousOrderCount = -1;
         let audioContext = null;
+        let pendingOrdersForPrint = [];
+
+        function escapeHtml(value) {
+            return String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            })[char]);
+        }
+
+        function safeSlipUrl(value) {
+            if (!value) return '';
+            try {
+                const url = new URL(String(value), window.location.href);
+                return url.protocol === 'https:' && ['drive.google.com', 'docs.google.com'].includes(url.hostname)
+                    ? url.href
+                    : '';
+            } catch (error) {
+                return '';
+            }
+        }
+
+        function printableItems(order) {
+            if (Array.isArray(order.items) && order.items.length) {
+                return order.items.map((item) => {
+                    const quantity = Number(item && item.quantity);
+                    const quantityLabel = Number.isInteger(quantity) && quantity > 0
+                        ? `<span class="ticket-quantity"> ×${quantity}</span>`
+                        : '';
+                    return `<li>${escapeHtml(item && (item.name || item.menu))}${quantityLabel}</li>`;
+                }).join('');
+            }
+            const menu = String(order.menu || '').trim() || 'ไม่พบรายการ';
+            return `<li>${escapeHtml(menu).replace(/\r?\n/g, '<br>')}</li>`;
+        }
+
+        function printOrder(index) {
+            const order = pendingOrdersForPrint[index];
+            if (!order) return;
+
+            const orderId = String(order.orderId || '');
+            const room = String(order.room || 'ไม่ระบุ');
+            const timestamp = String(order.timestamp || order.time || '-');
+            const name = String(order.name || '');
+            const ticket = document.getElementById('print-ticket');
+            const previousTitle = document.title;
+
+            ticket.innerHTML = `
+                <div class="ticket-header">BAR ORDER COPY</div>
+                <div class="ticket-meta"><span>ห้อง/โต๊ะ</span><strong>${escapeHtml(room)}</strong></div>
+                ${orderId ? `<div class="ticket-meta"><span>ออเดอร์</span><strong>${escapeHtml(orderId)}</strong></div>` : ''}
+                <div class="ticket-meta"><span>เวลา</span><span>${escapeHtml(timestamp)}</span></div>
+                ${name ? `<div class="ticket-meta"><span>ชื่อ</span><span>${escapeHtml(name)}</span></div>` : ''}
+                <div class="ticket-items"><strong>รายการสั่งซื้อ</strong><ol>${printableItems(order)}</ol></div>
+                <div class="ticket-note">สำเนาสำหรับ Bar</div>`;
+
+            document.title = `BAR-${orderId || room}`;
+            document.body.classList.add('printing-order');
+            window.addEventListener('afterprint', () => {
+                document.body.classList.remove('printing-order');
+                ticket.innerHTML = '';
+                document.title = previousTitle;
+            }, { once: true });
+            window.print();
+        }
 
         function playChimeSound() {
             try {
@@ -146,6 +258,7 @@
         function renderOrders(orders) {
             const container = document.getElementById('orders-container');
             const pendingOrders = orders.filter(o => o.status !== 'Completed');
+            pendingOrdersForPrint = pendingOrders;
             
             if (previousOrderCount !== -1 && pendingOrders.length > previousOrderCount) {
                 playChimeSound();
@@ -164,39 +277,53 @@
                 return;
             }
 
-            container.innerHTML = pendingOrders.map((order) => `
+            container.innerHTML = pendingOrders.map((order, index) => {
+                const slipUrl = safeSlipUrl(order.slip);
+                const payment = String(order.payment || '');
+                const paymentBadge = slipUrl
+                    ? `<a href="${escapeHtml(slipUrl)}" target="_blank" rel="noopener" class="bg-sky-600/20 text-sky-300 text-[11px] font-semibold px-2 py-1 rounded whitespace-nowrap">🧾 ดูสลิป</a>`
+                    : (/alipay/i.test(payment)
+                        ? `<span class="bg-blue-600/20 text-blue-300 text-[11px] font-semibold px-2 py-1 rounded whitespace-nowrap">Alipay: ชำระที่ห้อง</span>`
+                        : (/restaurant/i.test(payment)
+                            ? `<span class="bg-amber-500/20 text-amber-300 text-[11px] font-semibold px-2 py-1 rounded whitespace-nowrap">💵 ชำระที่ร้าน (บัตร/เงินสด)</span>`
+                            : (order.orderId && Object.prototype.hasOwnProperty.call(order, 'slip')
+                                ? `<span class="bg-red-600/20 text-red-300 text-[11px] px-2 py-1 rounded whitespace-nowrap">ไม่มีสลิป</span>`
+                                : '')));
+                return `
                 <div class="order-card bg-gray-900 rounded-xl p-4 border-l-4 border-amber-500 shadow-md border-t border-r border-b border-gray-800 flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-start border-b border-gray-800 pb-2 mb-3">
                             <div>
                                 <span class="bg-amber-500/20 text-amber-400 font-bold px-2.5 py-1 rounded text-sm">
-                                    ห้อง/โต๊ะ: ${order.room || 'ไม่ระบุ'}
+                                    ห้อง/โต๊ะ: ${escapeHtml(order.room || 'ไม่ระบุ')}
                                 </span>
-                                <p class="text-[10px] text-gray-400 mt-2">🕒 ${order.timestamp}</p>
-                                ${order.orderId ? `<p class="text-[10px] text-gray-500 mt-0.5"># ${order.orderId}</p>` : ''}
+                                <p class="text-[10px] text-gray-400 mt-2">🕒 ${escapeHtml(order.timestamp || order.time || '-')}</p>
+                                ${order.orderId ? `<p class="text-[10px] text-gray-500 mt-0.5"># ${escapeHtml(order.orderId)}</p>` : ''}
                             </div>
-                            ${order.slip
-                                ? `<a href="${order.slip}" target="_blank" rel="noopener" class="bg-sky-600/20 text-sky-300 text-[11px] font-semibold px-2 py-1 rounded whitespace-nowrap">🧾 ดูสลิป</a>`
-                                : (/restaurant/i.test(order.payment || '')
-                                    ? `<span class="bg-amber-500/20 text-amber-300 text-[11px] font-semibold px-2 py-1 rounded whitespace-nowrap">💵 ชำระที่ร้าน (บัตร/เงินสด)</span>`
-                                    : (order.orderId ? `<span class="bg-red-600/20 text-red-300 text-[11px] px-2 py-1 rounded whitespace-nowrap">ไม่มีสลิป</span>` : ''))}
+                            ${paymentBadge}
                         </div>
 
                         <div class="text-gray-200 text-xs leading-relaxed mb-4">
                             <p class="font-semibold text-gray-400 text-[10px] mb-1">รายการสั่งซื้อ:</p>
-                            <p class="bg-gray-950 p-2.5 rounded-lg border border-gray-800">${order.menu}</p>
+                            <p class="bg-gray-950 p-2.5 rounded-lg border border-gray-800">${escapeHtml(order.menu || '').replace(/\r?\n/g, '<br>')}</p>
                         </div>
                     </div>
 
                     <div class="pt-2 border-t border-gray-800 flex justify-between items-center gap-2">
-                        <span class="text-amber-400 font-bold text-sm">฿${order.price || '0'}</span>
-                        <button onclick="updateOrderStatus(${order.rowIndex}, 'Completed')" 
-                            class="bg-green-600 hover:bg-green-500 text-white font-semibold text-xs py-2 px-3 rounded-lg transition shadow flex items-center gap-1">
-                            ✅ เสิร์ฟแล้ว
-                        </button>
+                        <span class="text-amber-400 font-bold text-sm">฿${escapeHtml(order.price || '0')}</span>
+                        <div class="flex gap-2">
+                            <button onclick="printOrder(${index})" title="เปิดหน้าต่างพิมพ์ แล้วเลือกเครื่อง Bar"
+                                class="bg-sky-700 hover:bg-sky-600 text-white font-semibold text-xs py-2 px-3 rounded-lg transition shadow">
+                                🖨 พิมพ์ Bar
+                            </button>
+                            <button onclick="updateOrderStatus(${Number(order.rowIndex) || 0}, 'Completed')"
+                                class="bg-green-600 hover:bg-green-500 text-white font-semibold text-xs py-2 px-3 rounded-lg transition shadow flex items-center gap-1">
+                                ✅ เสิร์ฟแล้ว
+                            </button>
+                        </div>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         async function updateOrderStatus(rowIndex, newStatus) {
