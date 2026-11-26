@@ -9,6 +9,9 @@ const elements = new Map();
 const listeners = {};
 let printCalls = 0;
 let fetchCalls = 0;
+let confirmCalls = 0;
+let confirmResult = true;
+const requests = [];
 
 function makeElement() {
   const classes = new Set();
@@ -67,6 +70,7 @@ const window = {
   location: { href: 'https://kds.example/' },
   AudioContext: MockAudioContext,
   print() { printCalls += 1; },
+  confirm() { confirmCalls += 1; return confirmResult; },
   addEventListener(name, callback) { listeners[name] = callback; }
 };
 const context = vm.createContext({
@@ -74,9 +78,13 @@ const context = vm.createContext({
   window,
   console,
   URL,
-  fetch: async () => {
+  fetch: async (url, options = {}) => {
     fetchCalls += 1;
-    return { text: async () => JSON.stringify({ status: 'success', orders: [] }) };
+    requests.push({ url, options });
+    const body = options.method === 'POST'
+      ? { status: 'success' }
+      : { status: 'success', orders: [] };
+    return { ok: true, text: async () => JSON.stringify(body) };
   },
   setInterval() {}
 });
@@ -144,6 +152,47 @@ async function run() {
   context.printOrder(0);
   assert(document.getElementById('print-ticket').innerHTML.includes('Coffee (x1)<br>Tea (x2)'), 'legacy menu text prints as separate lines');
   assert.strictEqual(printCalls, 2, 'each explicit click prints one ticket');
+
+  context.renderOrders([{
+    orderId: 'NEW-1',
+    room: '104',
+    menu: 'Soup (x1)',
+    status: 'Pending',
+    canCancel: false
+  }]);
+  assert(!document.getElementById('orders-container').innerHTML.includes('ยกเลิกเมนู'), 'orders not marked overdue cannot be cancelled');
+
+  context.renderOrders([{
+    orderId: 'OLD-OVERDUE',
+    room: '105',
+    menu: 'Soup (x1)',
+    status: 'Pending',
+    rowIndex: 12,
+    canCancel: true,
+    cancelReasonOptions: ['เกินกำหนดเวลาชำระเงิน']
+  }]);
+  assert(document.getElementById('orders-container').innerHTML.includes('ยกเลิกเมนู'), 'overdue pending orders expose the cancel action');
+  confirmResult = false;
+  const postCountBeforeDecline = requests.filter(request => request.options.method === 'POST').length;
+  await context.cancelOrder(0);
+  assert.strictEqual(confirmCalls, 1, 'cancellation requires confirmation');
+  assert.strictEqual(requests.filter(request => request.options.method === 'POST').length, postCountBeforeDecline, 'declining confirmation sends no update');
+
+  confirmResult = true;
+  await context.cancelOrder(0);
+  const cancelRequest = requests.findLast(request => request.options.method === 'POST');
+  const cancelPayload = JSON.parse(cancelRequest.options.body);
+  assert.strictEqual(cancelPayload.orderId, 'OLD-OVERDUE', 'cancellation targets the whole order');
+  assert.strictEqual(cancelPayload.rowIndex, 12, 'row index is retained for legacy backends');
+  assert.strictEqual(cancelPayload.status, 'Cancelled', 'cancellation updates the order status');
+  assert.strictEqual(cancelPayload.reason, 'เกินกำหนดเวลาชำระเงิน', 'cancellation uses the backend-provided reason');
+  assert(!document.getElementById('orders-container').innerHTML.includes('OLD-OVERDUE'), 'cancelled order disappears after refresh');
+
+  context.renderOrders([
+    { orderId: 'CANCELLED-1', room: '106', menu: 'Tea', status: 'Cancelled' },
+    { orderId: 'DONE-1', room: '107', menu: 'Coffee', status: 'Completed' }
+  ]);
+  assert.strictEqual(document.getElementById('order-count').innerText, 'ออเดอร์ค้าง: 0', 'completed and cancelled orders are removed from the active queue');
 
   console.log('KDS print tests passed');
 }

@@ -257,7 +257,10 @@
 
         function renderOrders(orders) {
             const container = document.getElementById('orders-container');
-            const pendingOrders = orders.filter(o => o.status !== 'Completed');
+            const pendingOrders = orders.filter((order) => {
+                const status = String(order.status || '').trim().toLowerCase();
+                return status !== 'completed' && status !== 'cancelled';
+            });
             pendingOrdersForPrint = pendingOrders;
             
             if (previousOrderCount !== -1 && pendingOrders.length > previousOrderCount) {
@@ -280,6 +283,8 @@
             container.innerHTML = pendingOrders.map((order, index) => {
                 const slipUrl = safeSlipUrl(order.slip);
                 const payment = String(order.payment || '');
+                const cancelReasons = Array.isArray(order.cancelReasonOptions) ? order.cancelReasonOptions : [];
+                const canCancel = order.canCancel === true && cancelReasons.length > 0;
                 const paymentBadge = slipUrl
                     ? `<a href="${escapeHtml(slipUrl)}" target="_blank" rel="noopener" class="bg-sky-600/20 text-sky-300 text-[11px] font-semibold px-2 py-1 rounded whitespace-nowrap">🧾 ดูสลิป</a>`
                     : (/alipay/i.test(payment)
@@ -311,12 +316,16 @@
 
                     <div class="pt-2 border-t border-gray-800 flex justify-between items-center gap-2">
                         <span class="text-amber-400 font-bold text-sm">฿${escapeHtml(order.price || '0')}</span>
-                        <div class="flex gap-2">
+                        <div class="flex flex-wrap gap-2">
                             <button onclick="printOrder(${index})" title="เปิดหน้าต่างพิมพ์ แล้วเลือกเครื่อง Bar"
                                 class="bg-sky-700 hover:bg-sky-600 text-white font-semibold text-xs py-2 px-3 rounded-lg transition shadow">
                                 🖨 พิมพ์ Bar
                             </button>
-                            <button onclick="updateOrderStatus(${Number(order.rowIndex) || 0}, 'Completed')"
+                            ${canCancel ? `<button onclick="cancelOrder(${index})" title="ยกเลิกได้เมื่อออเดอร์ค้างเกิน 1 ชั่วโมง"
+                                class="bg-red-700 hover:bg-red-600 text-white font-semibold text-xs py-2 px-3 rounded-lg transition shadow">
+                                ยกเลิกเมนู
+                            </button>` : ''}
+                            <button onclick="updateOrderStatus(${index}, 'Completed')"
                                 class="bg-green-600 hover:bg-green-500 text-white font-semibold text-xs py-2 px-3 rounded-lg transition shadow flex items-center gap-1">
                                 ✅ เสิร์ฟแล้ว
                             </button>
@@ -326,17 +335,60 @@
             `}).join('');
         }
 
-        async function updateOrderStatus(rowIndex, newStatus) {
+        async function updateOrderStatus(index, newStatus, reason) {
+            const order = pendingOrdersForPrint[index];
+            if (!order) return;
+
+            const payload = {
+                action: 'updateStatus',
+                status: newStatus,
+                rowIndex: Number(order.rowIndex) || undefined,
+                orderId: String(order.orderId || '')
+            };
+            if (reason) payload.reason = reason;
+
             try {
-                await fetch(SCRIPT_URL, {
+                const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: 'updateStatus', rowIndex: rowIndex, status: newStatus }),
+                    body: JSON.stringify(payload),
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' }
                 });
-                fetchOrders();
+                const text = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (error) {
+                    throw new Error('ระบบออเดอร์ไม่ได้ตอบกลับเป็น JSON');
+                }
+                if (!response.ok || result.status !== 'success') {
+                    throw new Error(result.message || 'อัปเดตสถานะออเดอร์ไม่สำเร็จ');
+                }
+                await fetchOrders();
             } catch (error) {
                 console.error('Update Error:', error);
+                setConnectionError(error.message);
             }
+        }
+
+        function cancelOrder(index) {
+            const order = pendingOrdersForPrint[index];
+            if (!order || order.canCancel !== true) return;
+
+            const reasons = Array.isArray(order.cancelReasonOptions) ? order.cancelReasonOptions : [];
+            const reason = String(reasons[0] || '').trim();
+            if (!reason) {
+                setConnectionError('ระบบออเดอร์ไม่ได้ระบุเหตุผลที่ใช้ยกเลิก');
+                return;
+            }
+
+            const details = [
+                `ห้อง: ${order.room || 'ไม่ระบุ'}`,
+                order.orderId ? `ออเดอร์: ${order.orderId}` : '',
+                `รายการ: ${order.menu || 'ไม่ระบุ'}`,
+                `เหตุผล: ${reason}`
+            ].filter(Boolean).join('\n');
+            if (!window.confirm(`ยืนยันยกเลิกเมนูทั้งออเดอร์นี้หรือไม่?\n\n${details}`)) return;
+            return updateOrderStatus(index, 'Cancelled', reason);
         }
 
         fetchOrders();
