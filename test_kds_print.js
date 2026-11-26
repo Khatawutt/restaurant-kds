@@ -113,6 +113,7 @@ vm.runInContext(inlineScript, context);
 
 async function run() {
   await new Promise(resolve => setTimeout(resolve, 0));
+  assert(html.includes('การขาย · สรุปยอดขายประจำวัน'), 'KDS exposes a clearly labelled daily sales button');
   context.previousOrderCount = 1;
   const order = {
     orderId: 'MN26-01-101',
