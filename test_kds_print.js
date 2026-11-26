@@ -71,6 +71,7 @@ const window = {
   AudioContext: MockAudioContext,
   print() { printCalls += 1; },
   confirm() { confirmCalls += 1; return confirmResult; },
+  prompt() { return 'test-kds-token'; },
   addEventListener(name, callback) { listeners[name] = callback; }
 };
 const context = vm.createContext({
@@ -81,9 +82,27 @@ const context = vm.createContext({
   fetch: async (url, options = {}) => {
     fetchCalls += 1;
     requests.push({ url, options });
-    const body = options.method === 'POST'
-      ? { status: 'success' }
-      : { status: 'success', orders: [] };
+    const requestBody = options.body ? JSON.parse(options.body) : {};
+    const summary = {
+      date: '2026-11-26',
+      completedOrderCount: 2,
+      pendingOrderCount: 0,
+      cancelledOrderCount: 1,
+      ordersWithoutAmount: 0,
+      totalSales: 1280,
+      paymentTotals: { Cash: 700, 'Thai QR': 580 },
+      closed: requestBody.action === 'closeDailySales',
+      closedAt: requestBody.action === 'closeDailySales' ? '2026-11-26T12:00:00.000Z' : ''
+    };
+    const body = requestBody.action === 'closeDailySales'
+      ? { status: 'success', summary }
+      : requestBody.action === 'cancelItem'
+        ? { status: 'success', rowIndex: requestBody.rowIndex }
+        : url.includes('action=getDailySalesSummary')
+          ? { status: 'success', summary }
+          : options.method === 'POST'
+            ? { status: 'success' }
+            : { status: 'success', orders: [] };
     return { ok: true, text: async () => JSON.stringify(body) };
   },
   setInterval() {}
@@ -198,6 +217,32 @@ async function run() {
     { orderId: 'DONE-1', room: '107', menu: 'Coffee', status: 'Completed' }
   ]);
   assert.strictEqual(document.getElementById('order-count').innerText, 'ออเดอร์ค้าง: 0', 'completed and cancelled orders are removed from the active queue');
+
+  context.renderOrders([{
+    orderId: 'ITEM-CANCEL',
+    room: '108',
+    status: 'Pending',
+    items: [{ name: 'Soup', quantity: 1, rowIndex: 20, status: 'Pending' }]
+  }]);
+  const itemCard = document.getElementById('orders-container').innerHTML;
+  assert(itemCard.includes('ยกเลิกรายการ'), 'each API-backed pending item exposes its own cancel button');
+  await context.cancelOrderItem(0, 0);
+  const itemCancelRequest = requests.findLast(request => request.options.method === 'POST');
+  const itemCancelPayload = JSON.parse(itemCancelRequest.options.body);
+  assert.strictEqual(itemCancelPayload.action, 'cancelItem', 'item cancellation uses a distinct API action');
+  assert.strictEqual(itemCancelPayload.rowIndex, 20, 'item cancellation targets only its spreadsheet row');
+  assert.strictEqual(itemCancelPayload.token, 'test-kds-token', 'item cancellation includes the staff authorization token');
+
+  context.openDailySalesSummary(true);
+  await new Promise(resolve => setTimeout(resolve, 0));
+  assert(document.getElementById('daily-sales-modal').classList.contains('hidden') === false, 'daily sales opens in a modal');
+  assert(document.getElementById('daily-sales-content').innerHTML.includes('฿1,280.00'), 'daily sales summary displays total sales');
+  assert(document.getElementById('daily-sales-content').innerHTML.includes('Thai QR'), 'daily sales summary separates payment methods');
+  assert(document.getElementById('daily-sales-close-button').classList.contains('hidden') === false, 'close confirmation appears after reviewing summary');
+  await context.closeDailySalesDay();
+  assert(document.getElementById('daily-sales-content').innerHTML.includes('ปิดรอบแล้ว'), 'closing the day displays the stored snapshot');
+  const closeRequest = requests.findLast(request => JSON.parse(request.options.body || '{}').action === 'closeDailySales');
+  assert.strictEqual(JSON.parse(closeRequest.options.body).token, 'test-kds-token', 'daily close includes the staff authorization token');
 
   console.log('KDS print tests passed');
 }

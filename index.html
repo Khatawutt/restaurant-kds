@@ -69,13 +69,21 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-4 mt-4 md:mt-0">
+        <div class="flex flex-wrap items-center justify-center gap-2 mt-4 md:mt-0">
             <button id="audio-btn" onclick="enableAudio()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow flex items-center gap-2 transition">
                 <span id="audio-icon">🔔</span> <span id="audio-status">เปิดเสียงเตือน</span>
             </button>
 
             <button onclick="openSheet()" title="กดค้างไว้หรือคลิกขวาเพื่อเปลี่ยนลิงก์" oncontextmenu="event.preventDefault(); setSheetUrl()" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow flex items-center gap-2 transition">
                 📊 <span>เปิด Sheets</span>
+            </button>
+
+            <button onclick="openDailySalesSummary()" class="bg-indigo-700 hover:bg-indigo-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow transition">
+                📈 สรุปยอดวันนี้
+            </button>
+
+            <button onclick="openDailySalesSummary(true)" class="bg-purple-700 hover:bg-purple-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow transition">
+                🔒 ปิดรอบวันนี้
             </button>
 
             <div class="text-right">
@@ -86,6 +94,23 @@
     </header>
 
     <div id="connection-error" class="hidden bg-red-900/60 border border-red-700 text-red-100 text-sm rounded-xl p-3 mb-4"></div>
+
+    <section id="daily-sales-modal" class="hidden fixed inset-0 z-50 bg-black/70 p-4 flex items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="daily-sales-title">
+        <div class="w-full max-w-xl max-h-[90vh] overflow-y-auto bg-gray-900 border border-gray-700 rounded-2xl shadow-2xl p-5">
+            <div class="flex justify-between items-start gap-4 mb-4">
+                <div>
+                    <h2 id="daily-sales-title" class="text-xl font-bold text-amber-300">สรุปยอดขายรายวัน</h2>
+                    <p id="daily-sales-date" class="text-sm text-gray-400 mt-1"></p>
+                </div>
+                <button onclick="closeDailySalesSummary()" aria-label="ปิดหน้าต่าง" class="text-gray-400 hover:text-white text-xl">✕</button>
+            </div>
+            <div id="daily-sales-content" class="text-sm text-gray-200">กำลังโหลดสรุปยอดขาย...</div>
+            <div class="flex flex-wrap justify-end gap-2 mt-5 pt-4 border-t border-gray-800">
+                <button onclick="closeDailySalesSummary()" class="bg-gray-700 hover:bg-gray-600 text-white text-xs font-semibold py-2 px-4 rounded-lg">ปิด</button>
+                <button id="daily-sales-close-button" onclick="closeDailySalesDay()" class="hidden bg-purple-700 hover:bg-purple-600 disabled:bg-gray-700 disabled:text-gray-400 text-white text-xs font-semibold py-2 px-4 rounded-lg">ยืนยันปิดรอบการขาย</button>
+            </div>
+        </div>
+    </section>
 
     <main id="orders-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <div class="col-span-full text-center py-16 text-gray-500">
@@ -135,7 +160,9 @@
                         : null;
                     return {
                         name: String(item && (item.name || item.menu) || '').trim(),
-                        quantity: Number.isInteger(quantity) && quantity > 0 ? quantity : null
+                        quantity: Number.isInteger(quantity) && quantity > 0 ? quantity : null,
+                        rowIndex: Number.isInteger(Number(item && item.rowIndex)) ? Number(item.rowIndex) : null,
+                        status: String(item && item.status || order.status || '').trim()
                     };
                 }).filter(item => item.name);
             }
@@ -148,24 +175,36 @@
                 return entries.map((entry) => {
                     const match = entry.match(/^(.*?)\s+\(x(\d+)\)(?:\s+\[([^\]]*)\])?$/);
                     return match
-                        ? { name: match[1] + (match[3] ? ` [${match[3]}]` : ''), quantity: Number(match[2]) }
-                        : { name: entry, quantity: null };
+                        ? { name: match[1] + (match[3] ? ` [${match[3]}]` : ''), quantity: Number(match[2]), rowIndex: null, status: order.status || '' }
+                        : { name: entry, quantity: null, rowIndex: null, status: order.status || '' };
                 }).filter(item => item.name);
             });
         }
 
-        function renderMenuRows(order) {
+        function renderMenuRows(order, orderIndex) {
             const items = menuItemsForDisplay(order);
             if (!items.length) return '<div class="text-gray-400">ไม่พบรายการ</div>';
-            return items.map(item => `
-                <div class="menu-item-row flex items-start justify-between gap-3 border-b border-gray-800 last:border-0 py-2">
-                    <span class="min-w-0 flex-1 break-words">${escapeHtml(item.name)}</span>
-                    ${item.quantity ? `<strong class="shrink-0 text-amber-300">×${item.quantity}</strong>` : ''}
-                </div>`).join('');
+            return items.map((item, itemIndex) => {
+                const itemStatus = String(item.status || order.status || '').toLowerCase();
+                const cancelled = itemStatus === 'cancelled';
+                const canCancelItem = !cancelled && itemStatus === 'pending'
+                    && Number.isInteger(item.rowIndex) && item.rowIndex >= 2;
+                return `
+                <div class="menu-item-row flex items-center justify-between gap-3 border-b border-gray-800 last:border-0 py-2 ${cancelled ? 'text-gray-500' : ''}">
+                    <span class="min-w-0 flex-1 break-words ${cancelled ? 'line-through' : ''}">
+                        ${escapeHtml(item.name)}
+                        ${cancelled ? '<small class="ml-1 text-red-400 no-underline">ยกเลิกแล้ว</small>' : ''}
+                    </span>
+                    <div class="flex shrink-0 items-center gap-2">
+                        ${item.quantity ? `<strong class="${cancelled ? 'text-gray-500' : 'text-amber-300'}">×${item.quantity}</strong>` : ''}
+                        ${canCancelItem ? `<button onclick="cancelOrderItem(${orderIndex}, ${itemIndex})" title="ยกเลิกรายการนี้เท่านั้น" class="bg-red-900/80 hover:bg-red-700 text-red-100 text-[10px] font-semibold px-2 py-1 rounded">ยกเลิกรายการ</button>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
         }
 
         function printableItems(order) {
-            return menuItemsForDisplay(order).map(item => {
+            return menuItemsForDisplay(order).filter(item => String(item.status || order.status || '').toLowerCase() !== 'cancelled').map(item => {
                 const quantityLabel = item.quantity ? `<span class="ticket-quantity"> ×${item.quantity}</span>` : '';
                 return `<li>${escapeHtml(item.name)}${quantityLabel}</li>`;
             }).join('');
@@ -340,7 +379,7 @@
 
                         <div class="text-gray-200 text-xs leading-relaxed mb-4">
                             <p class="font-semibold text-gray-400 text-[10px] mb-1">รายการสั่งซื้อ:</p>
-                            <div class="bg-gray-950 p-2.5 rounded-lg border border-gray-800">${renderMenuRows(order)}</div>
+                            <div class="bg-gray-950 p-2.5 rounded-lg border border-gray-800">${renderMenuRows(order, index)}</div>
                         </div>
                     </div>
 
@@ -400,6 +439,49 @@
             }
         }
 
+        async function cancelOrderItem(orderIndex, itemIndex) {
+            const order = pendingOrdersForPrint[orderIndex];
+            const item = order && menuItemsForDisplay(order)[itemIndex];
+            if (!order || !item || item.status.toLowerCase() !== 'pending'
+                || !Number.isInteger(item.rowIndex) || item.rowIndex < 2) return;
+
+            const details = [
+                `ห้อง/โต๊ะ: ${order.room || 'ไม่ระบุ'}`,
+                order.orderId ? `ออเดอร์: ${order.orderId}` : '',
+                `รายการ: ${item.name}${item.quantity ? ` ×${item.quantity}` : ''}`
+            ].filter(Boolean).join('\n');
+            if (!window.confirm(`ยืนยันยกเลิกรายการนี้เท่านั้นหรือไม่?\n\n${details}`)) return;
+            const token = window.prompt('กรอกรหัสพนักงาน KDS เพื่อยืนยันการยกเลิกรายการ:');
+            if (!token) return;
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'cancelItem',
+                        orderId: String(order.orderId || ''),
+                        rowIndex: item.rowIndex,
+                        token: String(token).trim()
+                    }),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                });
+                const text = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (error) {
+                    throw new Error('ระบบออเดอร์ไม่ได้ตอบกลับเป็น JSON');
+                }
+                if (!response.ok || result.status !== 'success') {
+                    throw new Error(result.message || 'ยกเลิกรายการไม่สำเร็จ');
+                }
+                await fetchOrders();
+            } catch (error) {
+                console.error('Cancel Item Error:', error);
+                setConnectionError(error.message);
+            }
+        }
+
         function cancelOrder(index) {
             const order = pendingOrdersForPrint[index];
             if (!order || order.canCancel !== true) return;
@@ -419,6 +501,116 @@
             ].filter(Boolean).join('\n');
             if (!window.confirm(`ยืนยันยกเลิกเมนูทั้งออเดอร์นี้หรือไม่?\n\n${details}`)) return;
             return updateOrderStatus(index, 'Cancelled', reason);
+        }
+
+        function todayDateKey() {
+            const parts = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'Asia/Bangkok',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            }).formatToParts(new Date());
+            const part = type => parts.find(value => value.type === type).value;
+            return `${part('year')}-${part('month')}-${part('day')}`;
+        }
+
+        function openDailySalesSummary(closeAfterReview) {
+            const modal = document.getElementById('daily-sales-modal');
+            modal.classList.remove('hidden');
+            document.getElementById('daily-sales-date').innerText = `วันที่ ${todayDateKey()} (เวลาไทย)`;
+            document.getElementById('daily-sales-content').innerText = 'กำลังโหลดสรุปยอดขาย...';
+            document.getElementById('daily-sales-close-button').classList.add('hidden');
+            fetchDailySalesSummary(todayDateKey(), closeAfterReview === true);
+        }
+
+        function closeDailySalesSummary() {
+            document.getElementById('daily-sales-modal').classList.add('hidden');
+        }
+
+        function formatBaht(value) {
+            const amount = Number(value);
+            return `฿${Number.isFinite(amount) ? amount.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}`;
+        }
+
+        function renderDailySalesSummary(summary, closeAfterReview) {
+            const payments = Object.entries(summary.paymentTotals || {})
+                .sort((a, b) => a[0].localeCompare(b[0], 'th'));
+            const paymentRows = payments.length
+                ? payments.map(([method, total]) => `
+                    <div class="flex justify-between gap-4 py-1 border-b border-gray-800">
+                        <span class="break-words">${escapeHtml(method)}</span>
+                        <strong class="shrink-0">${formatBaht(total)}</strong>
+                    </div>`).join('')
+                : '<p class="text-gray-400">ยังไม่มียอดขายที่เสิร์ฟแล้วในวันนี้</p>';
+            const warnings = [];
+            if (summary.pendingOrderCount) warnings.push(`ยังมี ${summary.pendingOrderCount} ออเดอร์ค้าง`);
+            if (summary.ordersWithoutAmount) warnings.push(`${summary.ordersWithoutAmount} ออเดอร์ไม่มีราคาที่ถูกต้อง`);
+            document.getElementById('daily-sales-content').innerHTML = `
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="bg-gray-950 rounded-lg p-3"><p class="text-gray-400 text-xs">ออเดอร์เสร็จแล้ว</p><strong class="text-lg">${Number(summary.completedOrderCount) || 0}</strong></div>
+                    <div class="bg-gray-950 rounded-lg p-3"><p class="text-gray-400 text-xs">ยอดขายรวม</p><strong class="text-lg text-amber-300">${formatBaht(summary.totalSales)}</strong></div>
+                </div>
+                <h3 class="font-semibold mb-2">แยกตามช่องทางชำระเงิน</h3>
+                <div class="mb-4">${paymentRows}</div>
+                <p class="text-xs text-gray-400">ออเดอร์ค้าง: ${Number(summary.pendingOrderCount) || 0} · ยกเลิกทั้งออเดอร์: ${Number(summary.cancelledOrderCount) || 0}</p>
+                ${summary.closed
+                    ? `<p class="mt-3 rounded-lg bg-green-900/40 border border-green-800 p-3 text-green-200">ปิดรอบแล้ว${summary.closedAt ? ` เมื่อ ${escapeHtml(summary.closedAt)}` : ''} ยอดนี้เป็น snapshot ตอนปิดรอบ</p>`
+                    : `<p class="mt-3 text-xs text-gray-400">สรุปยอดเฉพาะออเดอร์ที่เสิร์ฟแล้ว ไม่รวมออเดอร์ที่ยกเลิก ยอดเป็นยอดรวมระดับออเดอร์ การยกเลิกรายการย่อยไม่ปรับยอดหรือคืนเงินอัตโนมัติ</p>`}
+                ${warnings.length ? `<p class="mt-3 rounded-lg bg-red-900/40 border border-red-800 p-3 text-red-200">${escapeHtml(warnings.join(' · '))}</p>` : ''}
+            `;
+            const closeButton = document.getElementById('daily-sales-close-button');
+            closeButton.classList.toggle('hidden', !!summary.closed || closeAfterReview !== true);
+            closeButton.disabled = Number(summary.pendingOrderCount) > 0 || Number(summary.ordersWithoutAmount) > 0;
+        }
+
+        async function fetchDailySalesSummary(date, closeAfterReview) {
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getDailySalesSummary&date=${encodeURIComponent(date)}`);
+                const text = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (error) {
+                    throw new Error('ระบบออเดอร์ไม่ได้ตอบกลับเป็น JSON');
+                }
+                if (!response.ok || result.status !== 'success' || !result.summary) {
+                    throw new Error(result.message || 'โหลดสรุปยอดขายไม่สำเร็จ');
+                }
+                renderDailySalesSummary(result.summary, closeAfterReview);
+            } catch (error) {
+                console.error('Daily Sales Summary Error:', error);
+                document.getElementById('daily-sales-content').innerText = `โหลดสรุปยอดขายไม่สำเร็จ: ${error.message}`;
+                document.getElementById('daily-sales-close-button').classList.add('hidden');
+            }
+        }
+
+        async function closeDailySalesDay() {
+            const date = todayDateKey();
+            if (!window.confirm(`ยืนยันปิดรอบการขายวันที่ ${date} หรือไม่?\n\nระบบจะบันทึกยอดสรุปเป็น snapshot และไม่รับออเดอร์ใหม่ของวันนี้`)) return;
+            const token = window.prompt('กรอกรหัสพนักงาน KDS เพื่อยืนยันการปิดรอบ:');
+            if (!token) return;
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'closeDailySales', date: date, token: String(token).trim() }),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                });
+                const text = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (error) {
+                    throw new Error('ระบบออเดอร์ไม่ได้ตอบกลับเป็น JSON');
+                }
+                if (!response.ok || result.status !== 'success' || !result.summary) {
+                    throw new Error(result.message || 'ปิดรอบการขายไม่สำเร็จ');
+                }
+                renderDailySalesSummary(result.summary, false);
+            } catch (error) {
+                console.error('Close Daily Sales Error:', error);
+                document.getElementById('daily-sales-content').innerText = `ปิดรอบการขายไม่สำเร็จ: ${error.message}`;
+                document.getElementById('daily-sales-close-button').classList.add('hidden');
+            }
         }
 
         fetchOrders();
