@@ -11,6 +11,7 @@ let printCalls = 0;
 let fetchCalls = 0;
 let confirmCalls = 0;
 let confirmResult = true;
+const confirmMessages = [];
 const requests = [];
 
 function makeElement() {
@@ -70,7 +71,7 @@ const window = {
   location: { href: 'https://kds.example/' },
   AudioContext: MockAudioContext,
   print() { printCalls += 1; },
-  confirm() { confirmCalls += 1; return confirmResult; },
+  confirm(message) { confirmCalls += 1; confirmMessages.push(message); return confirmResult; },
   prompt() { return 'test-kds-token'; },
   addEventListener(name, callback) { listeners[name] = callback; }
 };
@@ -232,6 +233,7 @@ async function run() {
   assert.strictEqual(itemCancelPayload.action, 'cancelItem', 'item cancellation uses a distinct API action');
   assert.strictEqual(itemCancelPayload.rowIndex, 20, 'item cancellation targets only its spreadsheet row');
   assert.strictEqual(itemCancelPayload.token, 'test-kds-token', 'item cancellation includes the staff authorization token');
+  assert(confirmMessages[confirmMessages.length - 1].includes('ลูกค้าไม่เอาแล้ว'), 'item cancellation confirmation states the customer reason');
 
   context.openDailySalesSummary(true);
   await new Promise(resolve => setTimeout(resolve, 0));

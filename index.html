@@ -450,7 +450,7 @@
                 order.orderId ? `ออเดอร์: ${order.orderId}` : '',
                 `รายการ: ${item.name}${item.quantity ? ` ×${item.quantity}` : ''}`
             ].filter(Boolean).join('\n');
-            if (!window.confirm(`ยืนยันยกเลิกรายการนี้เท่านั้นหรือไม่?\n\n${details}`)) return;
+            if (!window.confirm(`ยืนยันยกเลิกรายการนี้ตามคำขอลูกค้าหรือไม่?\nเหตุผล: ลูกค้าไม่เอาแล้ว\n\n${details}`)) return;
             const token = window.prompt('กรอกรหัสพนักงาน KDS เพื่อยืนยันการยกเลิกรายการ:');
             if (!token) return;
 
