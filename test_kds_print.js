@@ -197,7 +197,32 @@ async function run() {
     { orderId: 'CANCELLED-1', room: '106', menu: 'Tea', status: 'Cancelled' },
     { orderId: 'DONE-1', room: '107', menu: 'Coffee', status: 'Completed' }
   ]);
-  assert.strictEqual(document.getElementById('order-count').innerText, 'ออเดอร์ค้าง: 0', 'completed and cancelled orders are removed from the active queue');
+  assert.strictEqual(document.getElementById('order-count').innerText, '0', 'completed and cancelled orders are removed from the active queue');
+
+  const parsed = context.parseOrderTime('20/9/2026, 13:42:09');
+  assert(parsed && parsed.getFullYear() === 2026 && parsed.getMonth() === 8 && parsed.getDate() === 20 && parsed.getHours() === 13, 'sheet timestamps are parsed');
+  assert.strictEqual(context.parseOrderTime('26/11/2569, 9:05:00').getFullYear(), 2026, 'Buddhist-era years are converted');
+  assert.strictEqual(context.parseOrderTime('-'), null, 'unparseable timestamps are ignored');
+  const placed = new Date(Date.now() - 25 * 60000);
+  const sheetTime = `${placed.getDate()}/${placed.getMonth() + 1}/${placed.getFullYear()}, ${placed.getHours()}:${String(placed.getMinutes()).padStart(2, '0')}:00`;
+  context.renderOrders([{ orderId: 'LATE-1', room: '201', timestamp: sheetTime, menu: 'Soup (x1)', status: 'Pending' }]);
+  assert(document.getElementById('orders-container').innerHTML.includes('level-late'), 'orders waiting 20+ minutes are flagged late');
+  assert.strictEqual(document.getElementById('late-count').innerText, '1', 'late orders are counted in the header');
+
+  context.renderOrders([{ orderId: 'OLDFMT', room: '101', menu: 'ปีกไก่ x 1, เฟรนช์ฟรายส์ (French Fries) x 2', status: 'Pending' }]);
+  const oldFmt = document.getElementById('orders-container').innerHTML;
+  assert.strictEqual((oldFmt.match(/menu-item-row/g) || []).length, 2, 'legacy "x 1" menu text is split into rows');
+  assert(oldFmt.includes('item-en">French Fries'), 'English name is shown as a subtitle');
+  assert(oldFmt.includes('×2'), 'legacy "x 2" quantity is shown');
+
+  context.renderOrders([{ room: '2504 (Linda Nasse)', price: '1370', status: 'Pending',
+    menu: 'โค้ก ซีโร่ (กระป๋อง)-Coke Zero (Can) (x2), Set A สปาเก็ตตี้ (Pasta Combo)-Chicken Pesto Spaghetti (Set A) (x1) [No onion, no garlic \nExtra spicy]' }]);
+  const real = document.getElementById('orders-container').innerHTML;
+  assert.strictEqual((real.match(/menu-item-row/g) || []).length, 2, 'notes with line breaks stay with their item');
+  assert(real.includes('item-en">Coke Zero (Can)'), 'Thai-English dash names are split');
+  assert(real.includes('No onion, no garlic Extra spicy'), 'multi-line note is joined');
+  assert(real.includes('>2504</h2>') && real.includes('Linda Nasse'), 'room number and guest name are split');
+  assert(real.includes('1,370'), 'price gets a thousands separator');
 
   console.log('KDS print tests passed');
 }

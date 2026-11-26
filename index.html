@@ -3,17 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FCF9F1">
     <title>KDS Kitchen Display System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="assets/mana-mark-gold.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@500;600;700&family=Playfair+Display:wght@400;500&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Prompt', sans-serif; }
-        .order-card { animation: slideDown 0.3s ease-out; }
-        #print-ticket { display: none; }
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        :root {
+            --ivory: #FCF9F1;
+            --ivory-2: #F2EAD7;
+            --sage: #DEE7D6;
+            --card: #FFFDF8;
+            --ink: #283937;
+            --ink-btn: #2C403F;
+            --body: #3F4443;
+            --muted: #7C817F;
+            --line: #E7DFCB;
+            --gold: #A88030;
+            --gold-text: #96722A;
+            --pale-gold: #E4DBC0;
+            --warn: #C8902E;
+            --warn-bg: #FBF0D9;
+            --late: #B5523B;
+            --late-bg: #F8E4DD;
+            --ok: #5E7F62;
+            --ok-bg: #E6EEE1;
+            --radius: 14px;
         }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; }
+        body {
+            font-family: 'Sarabun', sans-serif;
+            color: var(--body);
+            min-height: 100vh;
+            background:
+                radial-gradient(1200px 600px at 100% 0%, rgba(222, 231, 214, 0.55), transparent 60%),
+                linear-gradient(180deg, var(--ivory) 0%, var(--ivory-2) 100%) fixed;
+            padding: 20px 24px 32px;
+            -webkit-font-smoothing: antialiased;
+        }
+        button { font-family: inherit; }
+        .num { font-family: 'Cormorant', serif; font-variant-numeric: lining-nums tabular-nums; font-feature-settings: "lnum" 1, "tnum" 1; }
+        .caps { font-family: 'Playfair Display', serif; text-transform: uppercase; letter-spacing: 0.18em; }
+
+        /* ---------- Header ---------- */
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+            padding: 14px 20px; margin-bottom: 18px;
+            background: rgba(255, 253, 248, 0.78);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--line); border-radius: 18px;
+            box-shadow: 0 1px 0 rgba(255,255,255,.8) inset, 0 8px 24px -18px rgba(40, 57, 55, .35);
+            position: sticky; top: 12px; z-index: 10;
+        }
+        .brand { display: flex; align-items: center; gap: 14px; }
+        .brand img { height: 46px; width: auto; display: block; }
+        .brand-divider { width: 1px; height: 38px; background: var(--line); }
+        .brand-title { margin: 0; color: var(--ink); font-size: 20px; line-height: 1.1; letter-spacing: 0.2em; font-weight: 400; }
+        .brand-sub { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+
+        .stats { display: flex; align-items: stretch; gap: 10px; }
+        .stat {
+            min-width: 92px; padding: 6px 14px; border-radius: 12px;
+            background: var(--card); border: 1px solid var(--line); text-align: center;
+        }
+        .stat .num { display: block; font-size: 34px; font-weight: 600; line-height: 1; color: var(--ink); }
+        .stat .label { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
+        .stat.is-late { background: var(--late-bg); border-color: #EBC7BB; }
+        .stat.is-late .num { color: var(--late); }
+        .stat.clock { min-width: 132px; }
+        .stat.clock .num { font-size: 30px; }
+        .stat.clock .live { justify-content: center; white-space: nowrap; }
+
+        .actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .tool-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            height: 38px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+            background: transparent; border: 1px solid #D6CCB3; color: var(--ink);
+            font-size: 13px; font-weight: 500; transition: background .15s, border-color .15s;
+        }
+        .tool-btn:hover { background: #F6F0E1; border-color: var(--gold); }
+        .tool-btn.is-on { background: var(--ok-bg); border-color: #BCD0B6; color: var(--ok); }
+        .tool-btn.attention { background: var(--ink-btn); border-color: var(--ink-btn); color: var(--pale-gold); }
+        .tool-btn.attention:hover { background: var(--ink); }
+        .tool-btn svg { width: 16px; height: 16px; }
+
+        .live { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+        .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px rgba(94,127,98,.18); }
+        .live.is-offline .live-dot { background: var(--late); box-shadow: 0 0 0 3px rgba(181,82,59,.18); }
+
+        .alert {
+            display: flex; gap: 10px; align-items: flex-start;
+            background: var(--late-bg); border: 1px solid #EBC7BB; color: #7A3524;
+            border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px;
+        }
+        .hidden { display: none !important; }
+
+        /* ---------- Orders ---------- */
+        #orders-container {
+            display: grid; gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+            align-items: start;
+        }
+        .order-card {
+            position: relative; display: flex; flex-direction: column;
+            background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+            box-shadow: 0 10px 28px -22px rgba(40, 57, 55, .45);
+            overflow: hidden;
+        }
+        .order-card::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--gold);
+        }
+        .order-card.level-warn::before { background: var(--warn); }
+        .order-card.level-late::before { background: var(--late); }
+        .order-card.level-late { border-color: #EBC7BB; }
+        .order-card.is-new { animation: arrive .45s ease-out, glow 2.4s ease-out; }
+        @keyframes arrive { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+        @keyframes glow { 0% { box-shadow: 0 0 0 4px rgba(168,128,48,.45); } 100% { box-shadow: 0 10px 28px -22px rgba(40,57,55,.45); } }
+
+        .card-head { padding: 16px 18px 12px 22px; display: flex; justify-content: space-between; gap: 12px; }
+        .room-label { font-size: 11px; color: var(--muted); letter-spacing: .04em; }
+        .room { margin: 0; color: var(--ink); font-size: 44px; line-height: .95; font-weight: 600; word-break: break-word; }
+        .room.is-text { font-family: 'Sarabun', sans-serif; font-size: 26px; font-weight: 600; line-height: 1.2; }
+        .meta { margin-top: 6px; font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; }
+        .meta b { color: var(--body); font-weight: 600; }
+        .head-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; }
+
+        .timer {
+            display: inline-flex; align-items: baseline; gap: 4px;
+            padding: 4px 12px; border-radius: 999px;
+            background: var(--ok-bg); color: var(--ok);
+        }
+        .timer .num { font-size: 24px; font-weight: 700; line-height: 1; }
+        .timer small { font-size: 12px; font-weight: 500; }
+        .timer.level-warn { background: var(--warn-bg); color: #8A5E12; }
+        .timer.level-late { background: var(--late); color: #FFF6F1; animation: pulse 1.6s ease-in-out infinite; }
+        @keyframes pulse { 50% { opacity: .78; } }
+
+        .badge {
+            display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+            font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; text-decoration: none;
+            border: 1px solid transparent;
+        }
+        .badge-slip { color: var(--ink); border-color: #CFC4A8; background: #fff; }
+        .badge-slip:hover { border-color: var(--gold); }
+        .badge-room { color: #3E6A75; background: #E3EEF0; }
+        .badge-shop { color: var(--gold-text); background: #F6EDD6; }
+        .badge-missing { color: var(--late); background: var(--late-bg); }
+
+        .items { margin: 0 18px 0 22px; border-top: 1px solid var(--line); }
+        .menu-item-row {
+            display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+            padding: 11px 0; border-bottom: 1px dashed #EAE3D2;
+        }
+        .menu-item-row:last-child { border-bottom: 0; }
+        .item-name { min-width: 0; flex: 1; overflow-wrap: anywhere; color: var(--ink); font-size: 18px; font-weight: 600; line-height: 1.3; }
+        .item-en { display: block; font-size: 13px; font-weight: 400; color: var(--muted); margin-top: 1px; }
+        .item-note {
+            display: table; margin-top: 5px; padding: 2px 8px; border-radius: 6px;
+            background: var(--warn-bg); color: #7A5310; font-size: 13px; font-weight: 600;
+        }
+        .qty {
+            flex-shrink: 0; min-width: 48px; height: 38px; padding: 0 10px; border-radius: 10px;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: var(--ink-btn); color: var(--pale-gold);
+            font-size: 24px; font-weight: 700;
+        }
+        .qty.is-one { background: #EFE8D6; color: var(--ink); }
+        .empty-items { padding: 12px 0; color: var(--muted); }
+
+        .card-foot {
+            margin-top: 12px; padding: 12px 18px 16px 22px;
+            background: linear-gradient(180deg, rgba(242,234,215,.0), rgba(242,234,215,.45));
+            border-top: 1px solid var(--line);
+            display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+        }
+        .price { color: var(--gold-text); font-size: 28px; font-weight: 700; line-height: 1; }
+        .price small { font-family: 'Sarabun', sans-serif; font-size: 14px; font-weight: 500; margin-right: 2px; }
+        .btns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            height: 44px; padding: 0 16px; border-radius: 11px; cursor: pointer;
+            font-size: 15px; font-weight: 600; border: 1px solid transparent; transition: transform .08s, background .15s;
+        }
+        .btn:active { transform: scale(.97); }
+        .btn:disabled { opacity: .55; cursor: wait; }
+        .btn-done { background: var(--ink-btn); color: var(--pale-gold); min-width: 132px; }
+        .btn-done:hover { background: var(--ink); }
+        .btn-print { background: #fff; color: var(--ink); border-color: #D6CCB3; }
+        .btn-print:hover { border-color: var(--gold); }
+        .btn-cancel { background: transparent; color: var(--late); border-color: #E6C3B8; }
+        .btn-cancel:hover { background: var(--late-bg); }
+        .btn svg { width: 17px; height: 17px; }
+
+        .empty {
+            grid-column: 1 / -1; text-align: center; padding: 70px 20px 60px; color: var(--muted);
+        }
+        .empty img { width: 210px; max-width: 60vw; opacity: .9; }
+        .empty h2 { margin: 26px 0 6px; color: var(--ink); font-weight: 500; font-size: 22px; }
+        .empty p { margin: 0; font-size: 15px; }
+
+        @media (max-width: 760px) {
+            body { padding: 12px; }
+            .topbar { position: static; }
+            .brand-divider, .brand-sub { display: none; }
+            .stats { width: 100%; }
+            .stat { flex: 1; }
+            #orders-container { grid-template-columns: 1fr; }
+        }
+
+        /* ---------- Bar print ticket (unchanged layout) ---------- */
+        #print-ticket { display: none; }
         @media print {
             @page { margin: 4mm; }
             body.printing-order {
@@ -58,38 +259,55 @@
         }
     </style>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen p-4 md:p-6">
+<body>
 
-    <header class="flex flex-col md:flex-row justify-between items-center bg-gray-900 p-4 rounded-xl border border-gray-800 shadow-xl mb-6">
-        <div class="flex items-center gap-3">
-            <span class="text-3xl">👨‍🍳</span>
+    <header class="topbar">
+        <div class="brand">
+            <img src="assets/mana-mark-gold.png" alt="MANA Ratchayothin">
+            <div class="brand-divider"></div>
             <div>
-                <h1 class="text-2xl font-bold text-amber-400">หน้าจอสั่งการห้องครัว (KDS)</h1>
-                <p class="text-xs text-gray-400">ระบบรับออเดอร์เรียลไทม์</p>
+                <h1 class="brand-title caps">Kitchen</h1>
+                <p class="brand-sub">หน้าจอครัว · ออเดอร์ In-Room Dining</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-4 mt-4 md:mt-0">
-            <button id="audio-btn" onclick="enableAudio()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow flex items-center gap-2 transition">
+        <div class="stats">
+            <div class="stat">
+                <span id="order-count" class="num">0</span>
+                <span class="label">ออเดอร์ค้าง</span>
+            </div>
+            <div id="late-stat" class="stat">
+                <span id="late-count" class="num">0</span>
+                <span class="label">รอเกิน 20 นาที</span>
+            </div>
+            <div class="stat clock">
+                <span id="clock" class="num">--:--</span>
+                <span id="last-update" class="label live"><span class="live-dot"></span><span id="last-update-text">กำลังเชื่อมต่อ…</span></span>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button id="audio-btn" onclick="enableAudio()" class="tool-btn attention">
                 <span id="audio-icon">🔔</span> <span id="audio-status">เปิดเสียงเตือน</span>
             </button>
-
-            <button onclick="openSheet()" title="กดค้างไว้หรือคลิกขวาเพื่อเปลี่ยนลิงก์" oncontextmenu="event.preventDefault(); setSheetUrl()" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow flex items-center gap-2 transition">
-                📊 <span>เปิด Sheets</span>
+            <button onclick="openSheet()" title="คลิกขวาเพื่อเปลี่ยนลิงก์" oncontextmenu="event.preventDefault(); setSheetUrl()" class="tool-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 9v12"/></svg>
+                <span>Sheets</span>
             </button>
-
-            <div class="text-right">
-                <span id="order-count" class="bg-amber-500 text-gray-950 font-bold px-3 py-1 rounded-full text-xs">ออเดอร์ค้าง: 0</span>
-                <p id="last-update" class="text-[10px] text-gray-400 mt-1">อัปเดตล่าสุด: -</p>
-            </div>
+            <button onclick="toggleFullscreen()" title="เต็มจอ" class="tool-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+                <span>เต็มจอ</span>
+            </button>
         </div>
     </header>
 
-    <div id="connection-error" class="hidden bg-red-900/60 border border-red-700 text-red-100 text-sm rounded-xl p-3 mb-4"></div>
+    <div id="connection-error" class="alert hidden"></div>
 
-    <main id="orders-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <div class="col-span-full text-center py-16 text-gray-500">
-            <p class="text-base">กำลังรอรับออเดอร์จากลูกค้า...</p>
+    <main id="orders-container">
+        <div class="empty">
+            <img src="assets/mana-ratchayothin-gold.png" alt="MANA Ratchayothin">
+            <h2>กำลังรอรับออเดอร์…</h2>
+            <p>ระบบจะอัปเดตอัตโนมัติทุก 5 วินาที</p>
         </div>
     </main>
 
@@ -98,12 +316,21 @@
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqT1lS6nhzEWxPLcOPvy-VU1GBuDLcd-XON3H5o1IG1PfiBdgukNV7AFyhqtSXxcDj/exec';
         // ลิงก์ Google Sheets ที่เก็บออเดอร์ — ใส่ตรงนี้เพื่อให้ทุกเครื่องใช้ลิงก์เดียวกัน
-        // ถ้าเว้นว่าง ปุ่ม "เปิด Sheets" จะถามลิงก์ครั้งแรกแล้วจำไว้ในเครื่องนั้น
+        // ถ้าเว้นว่าง ปุ่ม "Sheets" จะถามลิงก์ครั้งแรกแล้วจำไว้ในเครื่องนั้น
         const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1cqtqFcxvCM_l6aZpkscfP76ndsg5RyM7Qv92-Qmb_EU/edit?gid=1306309405#gid=1306309405';
         const SHEET_URL_KEY = 'kds_sheet_url';
+        // เกณฑ์เวลารอ (นาที): เหลือง = เริ่มช้า, แดง = เกินเวลา
+        const WARN_MINUTES = 10;
+        const LATE_MINUTES = 20;
         let previousOrderCount = -1;
         let audioContext = null;
         let pendingOrdersForPrint = [];
+        let lastOrders = [];
+        let seenOrderKeys = null;
+        const busyOrderKeys = new Set();
+
+        const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+        const ICON_PRINT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 9V3h10v6M7 17H4v-7h16v7h-3"/><rect x="7" y="14" width="10" height="7"/></svg>';
 
         function escapeHtml(value) {
             return String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({
@@ -127,6 +354,47 @@
             }
         }
 
+        function orderKey(order) {
+            return String(order.orderId || order.rowIndex || `${order.room}|${order.timestamp || order.time}`);
+        }
+
+        // รองรับ "20/9/2026, 13:42:09" (รูปแบบจาก Sheets), ปี พ.ศ. และ ISO
+        function parseOrderTime(value) {
+            if (!value) return null;
+            const text = String(value).trim();
+            const m = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}),?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+            if (m) {
+                let year = Number(m[3]);
+                if (year > 2400) year -= 543;
+                const d = new Date(year, Number(m[2]) - 1, Number(m[1]), Number(m[4]), Number(m[5]), Number(m[6] || 0));
+                return isNaN(d.getTime()) ? null : d;
+            }
+            if (/^\d{4}-\d{2}-\d{2}T/.test(text)) {
+                const d = new Date(text);
+                return isNaN(d.getTime()) ? null : d;
+            }
+            return null;
+        }
+
+        function pad2(n) { return String(n).padStart(2, '0'); }
+
+        function formatClock(d) { return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
+
+        function waitInfo(order, now) {
+            const placed = parseOrderTime(order.timestamp || order.time);
+            if (!placed) return { placed: null, minutes: null, level: 'ok' };
+            const minutes = Math.max(0, Math.floor((now - placed) / 60000));
+            const level = minutes >= LATE_MINUTES ? 'late' : (minutes >= WARN_MINUTES ? 'warn' : 'ok');
+            return { placed, minutes, level };
+        }
+
+        function formatWait(minutes) {
+            if (minutes == null) return '';
+            if (minutes < 60) return `<span class="num">${minutes}</span><small>นาที</small>`;
+            const h = Math.floor(minutes / 60);
+            return `<span class="num">${h}:${pad2(minutes % 60)}</span><small>ชม.</small>`;
+        }
+
         function menuItemsForDisplay(order) {
             if (Array.isArray(order.items) && order.items.length) {
                 return order.items.map((item) => {
@@ -139,29 +407,64 @@
                     };
                 }).filter(item => item.name);
             }
-            const menu = String(order.menu || '').trim();
+            // หมายเหตุใน [ ] อาจมีขึ้นบรรทัดใหม่ — รวมเป็นบรรทัดเดียวก่อนแยกรายการ
+            const menu = String(order.menu || '').trim()
+                .replace(/\[[^\]]*\]/g, note => note.replace(/\s*\r?\n\s*/g, ' ').replace(/\s{2,}/g, ' '));
             if (!menu) return [];
 
+            // รองรับทั้ง "Coffee (x1) [no sugar]" และรูปแบบเก่า "ปีกไก่ x 1"
             return menu.split(/\r?\n/).flatMap((line) => {
-                const matches = Array.from(line.matchAll(/([^,\n]+?\s+\(x\d+\)(?:\s+\[[^\]]*\])?)(?=,\s+|$)/g));
+                const matches = Array.from(line.matchAll(/([^,\n]+?\s+(?:\(x\d+\)|x\s?\d+)(?:\s+\[[^\]]*\])?)(?=,\s+|$)/g));
                 const entries = matches.length ? matches.map(match => match[1].trim()) : [line.trim()];
                 return entries.map((entry) => {
-                    const match = entry.match(/^(.*?)\s+\(x(\d+)\)(?:\s+\[([^\]]*)\])?$/);
+                    const match = entry.match(/^(.*?)\s+(?:\(x(\d+)\)|x\s?(\d+))(?:\s+\[([^\]]*)\])?$/);
                     return match
-                        ? { name: match[1] + (match[3] ? ` [${match[3]}]` : ''), quantity: Number(match[2]) }
+                        ? { name: match[1] + (match[4] ? ` [${match[4]}]` : ''), quantity: Number(match[2] || match[3]) }
                         : { name: entry, quantity: null };
                 }).filter(item => item.name);
             });
         }
 
+        // แยกชื่อไทย / ชื่ออังกฤษในวงเล็บ / หมายเหตุใน [ ]
+        function splitItemName(name) {
+            let main = String(name);
+            let note = '';
+            let english = '';
+            const noteMatch = main.match(/^(.*?)\s*\[([^\]]*)\]\s*$/);
+            if (noteMatch) { main = noteMatch[1]; note = noteMatch[2].trim(); }
+            // รูปแบบ "ชื่อไทย-English Name" (จากหน้าเมนู)
+            const dashMatch = main.match(/^(.*?[฀-๿)])\s*-\s*([A-Za-z][\x00-\x7F]*)$/);
+            const enMatch = main.match(/^(.*[^\x00-\x7F].*?)\s*\(([\x00-\x7F]+)\)\s*$/);
+            if (dashMatch && /[฀-๿]/.test(dashMatch[1])) { main = dashMatch[1]; english = dashMatch[2].trim(); }
+            else if (enMatch) { main = enMatch[1]; english = enMatch[2].trim(); }
+            return { main: main.trim(), english, note };
+        }
+
+        // "2504 (Linda Nasse)" / "#2015 (Enoo Megumi)" → เลขห้องตัวใหญ่ + ชื่อแขก
+        function splitRoom(value) {
+            const text = String(value || '').trim();
+            const m = text.match(/^#?\s*([A-Za-z]?\d[\w\-/.]*)\s*\((.+)\)\s*$/);
+            if (m) return { room: m[1], guest: m[2].trim() };
+            return { room: text || 'ไม่ระบุ', guest: '' };
+        }
+
+        function formatPrice(value) {
+            const text = String(value == null || value === '' ? '0' : value).trim();
+            const n = Number(text.replace(/,/g, ''));
+            return Number.isFinite(n) && /^[\d,.\s]+$/.test(text) ? n.toLocaleString('en-US') : text;
+        }
+
         function renderMenuRows(order) {
             const items = menuItemsForDisplay(order);
-            if (!items.length) return '<div class="text-gray-400">ไม่พบรายการ</div>';
-            return items.map(item => `
-                <div class="menu-item-row flex items-start justify-between gap-3 border-b border-gray-800 last:border-0 py-2">
-                    <span class="min-w-0 flex-1 break-words">${escapeHtml(item.name)}</span>
-                    ${item.quantity ? `<strong class="shrink-0 text-amber-300">×${item.quantity}</strong>` : ''}
-                </div>`).join('');
+            if (!items.length) return '<div class="empty-items">ไม่พบรายการ</div>';
+            return items.map(item => {
+                const parts = splitItemName(item.name);
+                return `
+                <div class="menu-item-row">
+                    <span class="item-name">${escapeHtml(parts.main)}${parts.english ? `<span class="item-en">${escapeHtml(parts.english)}</span>` : ''}${parts.note ? `<span class="item-note">✎ ${escapeHtml(parts.note)}</span>` : ''}</span>
+                    ${item.quantity ? `<strong class="qty num${item.quantity === 1 ? ' is-one' : ''}">×${item.quantity}</strong>` : ''}
+                </div>`;
+            }).join('');
         }
 
         function printableItems(order) {
@@ -209,17 +512,17 @@
                 const now = audioContext.currentTime;
                 const osc = audioContext.createOscillator();
                 const gain = audioContext.createGain();
-                
+
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(587.33, now); // D5
                 osc.frequency.setValueAtTime(880, now + 0.15); // A5
-                
+
                 gain.gain.setValueAtTime(0.3, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
-                
+
                 osc.connect(gain);
                 gain.connect(audioContext.destination);
-                
+
                 osc.start(now);
                 osc.stop(now + 0.8);
             } catch (e) {
@@ -231,10 +534,16 @@
             if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
             audioContext.resume();
             playChimeSound();
-            
-            document.getElementById('audio-btn').className = "bg-green-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow flex items-center gap-2";
+
+            document.getElementById('audio-btn').className = 'tool-btn is-on';
             document.getElementById('audio-icon').innerText = '🔊';
-            document.getElementById('audio-status').innerText = 'เปิดเสียงเตือนแล้ว';
+            document.getElementById('audio-status').innerText = 'เสียงเตือนเปิดอยู่';
+        }
+
+        function toggleFullscreen() {
+            const root = document.documentElement;
+            if (!document.fullscreenElement && root && root.requestFullscreen) root.requestFullscreen().catch(() => {});
+            else if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
         }
 
         function getSheetUrl() {
@@ -262,6 +571,11 @@
             const el = document.getElementById('connection-error');
             el.textContent = message ? `⚠️ เชื่อมต่อระบบออเดอร์ไม่ได้: ${message}` : '';
             el.classList.toggle('hidden', !message);
+            document.getElementById('last-update').classList.toggle('is-offline', !!message);
+        }
+
+        function updateClock() {
+            document.getElementById('clock').innerText = formatClock(new Date());
         }
 
         async function fetchOrders() {
@@ -285,89 +599,106 @@
             }
         }
 
+        function paymentBadgeHtml(order) {
+            const slipUrl = safeSlipUrl(order.slip);
+            const payment = String(order.payment || '');
+            if (slipUrl) return `<a href="${escapeHtml(slipUrl)}" target="_blank" rel="noopener" class="badge badge-slip">🧾 ดูสลิป</a>`;
+            if (/alipay/i.test(payment)) return `<span class="badge badge-room">Alipay: ชำระที่ห้อง</span>`;
+            if (/restaurant/i.test(payment)) return `<span class="badge badge-shop">💵 ชำระที่ร้าน</span>`;
+            if (order.orderId && Object.prototype.hasOwnProperty.call(order, 'slip')) return `<span class="badge badge-missing">ไม่มีสลิป</span>`;
+            return '';
+        }
+
         function renderOrders(orders) {
+            lastOrders = orders;
             const container = document.getElementById('orders-container');
             const pendingOrders = orders.filter((order) => {
                 const status = String(order.status || '').trim().toLowerCase();
                 return status !== 'completed' && status !== 'cancelled';
             });
             pendingOrdersForPrint = pendingOrders;
-            
+
             if (previousOrderCount !== -1 && pendingOrders.length > previousOrderCount) {
                 playChimeSound();
             }
             previousOrderCount = pendingOrders.length;
 
-            document.getElementById('order-count').innerText = `ออเดอร์ค้าง: ${pendingOrders.length}`;
-            document.getElementById('last-update').innerText = `อัปเดตล่าสุด: ${new Date().toLocaleTimeString('th-TH')}`;
+            const now = new Date();
+            const waits = pendingOrders.map(order => waitInfo(order, now));
+            const lateCount = waits.filter(w => w.level === 'late').length;
+
+            document.getElementById('order-count').innerText = String(pendingOrders.length);
+            document.getElementById('late-count').innerText = String(lateCount);
+            document.getElementById('late-stat').classList.toggle('is-late', lateCount > 0);
+            document.getElementById('last-update-text').innerText = `อัปเดต ${now.toLocaleTimeString('th-TH')}`;
+
+            const firstRender = seenOrderKeys === null;
+            const previouslySeen = seenOrderKeys || new Set();
+            seenOrderKeys = new Set(pendingOrders.map(orderKey));
 
             if (pendingOrders.length === 0) {
                 container.innerHTML = `
-                    <div class="col-span-full text-center py-20 text-gray-500">
-                        <p class="text-3xl mb-2">✅</p>
-                        <p class="text-base">ทำอาหารเสร็จครบทุกออเดอร์แล้ว</p>
+                    <div class="empty">
+                        <img src="assets/mana-ratchayothin-gold.png" alt="MANA Ratchayothin">
+                        <h2>ไม่มีออเดอร์ค้าง</h2>
+                        <p>ทำอาหารครบทุกออเดอร์แล้ว — ระบบจะแจ้งเตือนเมื่อมีออเดอร์ใหม่</p>
                     </div>`;
                 return;
             }
 
             container.innerHTML = pendingOrders.map((order, index) => {
-                const slipUrl = safeSlipUrl(order.slip);
-                const payment = String(order.payment || '');
+                const key = orderKey(order);
+                const wait = waits[index];
+                const isNew = !firstRender && !previouslySeen.has(key);
+                const busy = busyOrderKeys.has(key);
                 const cancelReasons = Array.isArray(order.cancelReasonOptions) ? order.cancelReasonOptions : [];
                 const canCancel = order.canCancel === true && cancelReasons.length > 0;
-                const paymentBadge = slipUrl
-                    ? `<a href="${escapeHtml(slipUrl)}" target="_blank" rel="noopener" class="bg-sky-600/20 text-sky-300 text-[11px] font-semibold px-2 py-1 rounded whitespace-nowrap">🧾 ดูสลิป</a>`
-                    : (/alipay/i.test(payment)
-                        ? `<span class="bg-blue-600/20 text-blue-300 text-[11px] font-semibold px-2 py-1 rounded whitespace-nowrap">Alipay: ชำระที่ห้อง</span>`
-                        : (/restaurant/i.test(payment)
-                            ? `<span class="bg-amber-500/20 text-amber-300 text-[11px] font-semibold px-2 py-1 rounded whitespace-nowrap">💵 ชำระที่ร้าน (บัตร/เงินสด)</span>`
-                            : (order.orderId && Object.prototype.hasOwnProperty.call(order, 'slip')
-                                ? `<span class="bg-red-600/20 text-red-300 text-[11px] px-2 py-1 rounded whitespace-nowrap">ไม่มีสลิป</span>`
-                                : '')));
+                const roomParts = splitRoom(order.room);
+                const room = roomParts.room;
+                const guest = String(order.name || roomParts.guest || '');
+                const roomIsNumeric = /^[\w\s\-()./#]{1,14}$/.test(room) && /\d/.test(room);
+                const placedLabel = wait.placed ? formatClock(wait.placed) : String(order.timestamp || order.time || '-');
+                const price = formatPrice(order.price);
+
                 return `
-                <div class="order-card bg-gray-900 rounded-xl p-4 border-l-4 border-amber-500 shadow-md border-t border-r border-b border-gray-800 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-start border-b border-gray-800 pb-2 mb-3">
-                            <div>
-                                <span class="bg-amber-500/20 text-amber-400 font-bold px-2.5 py-1 rounded text-sm">
-                                    ห้อง/โต๊ะ: ${escapeHtml(order.room || 'ไม่ระบุ')}
-                                </span>
-                                <p class="text-[10px] text-gray-400 mt-2">🕒 ${escapeHtml(order.timestamp || order.time || '-')}</p>
-                                ${order.orderId ? `<p class="text-[10px] text-gray-500 mt-0.5"># ${escapeHtml(order.orderId)}</p>` : ''}
+                <article class="order-card level-${wait.level}${isNew ? ' is-new' : ''}">
+                    <div class="card-head">
+                        <div style="min-width:0">
+                            <div class="room-label">ห้อง / โต๊ะ</div>
+                            <h2 class="room ${roomIsNumeric ? 'num' : 'is-text'}">${escapeHtml(room)}</h2>
+                            <div class="meta">
+                                <span>สั่งเวลา <b class="num">${escapeHtml(placedLabel)}</b></span>
+                                ${order.orderId ? `<span># ${escapeHtml(order.orderId)}</span>` : ''}
+                                ${guest ? `<span>คุณ <b>${escapeHtml(guest)}</b></span>` : ''}
                             </div>
-                            ${paymentBadge}
                         </div>
-
-                        <div class="text-gray-200 text-xs leading-relaxed mb-4">
-                            <p class="font-semibold text-gray-400 text-[10px] mb-1">รายการสั่งซื้อ:</p>
-                            <div class="bg-gray-950 p-2.5 rounded-lg border border-gray-800">${renderMenuRows(order)}</div>
+                        <div class="head-right">
+                            ${wait.minutes != null ? `<span class="timer level-${wait.level}" title="เวลารอตั้งแต่สั่ง">${formatWait(wait.minutes)}</span>` : ''}
+                            ${paymentBadgeHtml(order)}
                         </div>
                     </div>
 
-                    <div class="pt-2 border-t border-gray-800 flex justify-between items-center gap-2">
-                        <span class="text-amber-400 font-bold text-sm">฿${escapeHtml(order.price || '0')}</span>
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="printOrder(${index})" title="เปิดหน้าต่างพิมพ์ แล้วเลือกเครื่อง Bar"
-                                class="bg-sky-700 hover:bg-sky-600 text-white font-semibold text-xs py-2 px-3 rounded-lg transition shadow">
-                                🖨 พิมพ์ Bar
-                            </button>
-                            ${canCancel ? `<button onclick="cancelOrder(${index})" title="ยกเลิกได้เมื่อออเดอร์ค้างเกิน 1 ชั่วโมง"
-                                class="bg-red-700 hover:bg-red-600 text-white font-semibold text-xs py-2 px-3 rounded-lg transition shadow">
-                                ยกเลิกเมนู
-                            </button>` : ''}
-                            <button onclick="updateOrderStatus(${index}, 'Completed')"
-                                class="bg-green-600 hover:bg-green-500 text-white font-semibold text-xs py-2 px-3 rounded-lg transition shadow flex items-center gap-1">
-                                ✅ เสิร์ฟแล้ว
+                    <div class="items">${renderMenuRows(order)}</div>
+
+                    <div class="card-foot">
+                        <span class="price num"><small>฿</small>${escapeHtml(price)}</span>
+                        <div class="btns">
+                            ${canCancel ? `<button class="btn btn-cancel" onclick="cancelOrder(${index})" title="ยกเลิกได้เมื่อออเดอร์ค้างเกิน 1 ชั่วโมง"${busy ? ' disabled' : ''}>ยกเลิกเมนู</button>` : ''}
+                            <button class="btn btn-print" onclick="printOrder(${index})" title="เปิดหน้าต่างพิมพ์ แล้วเลือกเครื่อง Bar">${ICON_PRINT} พิมพ์ Bar</button>
+                            <button class="btn btn-done" onclick="updateOrderStatus(${index}, 'Completed')"${busy ? ' disabled' : ''}>
+                                ${busy ? 'กำลังบันทึก…' : `${ICON_CHECK} เสิร์ฟแล้ว`}
                             </button>
                         </div>
                     </div>
-                </div>
+                </article>
             `}).join('');
         }
 
         async function updateOrderStatus(index, newStatus, reason) {
             const order = pendingOrdersForPrint[index];
             if (!order) return;
+            const key = orderKey(order);
+            if (busyOrderKeys.has(key)) return;
 
             const payload = {
                 action: 'updateStatus',
@@ -377,6 +708,8 @@
             };
             if (reason) payload.reason = reason;
 
+            busyOrderKeys.add(key);
+            renderOrders(lastOrders);
             try {
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
@@ -393,9 +726,12 @@
                 if (!response.ok || result.status !== 'success') {
                     throw new Error(result.message || 'อัปเดตสถานะออเดอร์ไม่สำเร็จ');
                 }
+                busyOrderKeys.delete(key);
                 await fetchOrders();
             } catch (error) {
                 console.error('Update Error:', error);
+                busyOrderKeys.delete(key);
+                renderOrders(lastOrders);
                 setConnectionError(error.message);
             }
         }
@@ -421,6 +757,8 @@
             return updateOrderStatus(index, 'Cancelled', reason);
         }
 
+        updateClock();
+        setInterval(updateClock, 15000);
         fetchOrders();
         setInterval(fetchOrders, 5000); // ดึงข้อมูลอัปเดตทุก 5 วินาที
     </script>
