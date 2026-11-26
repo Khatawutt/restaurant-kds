@@ -3,17 +3,311 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#120c09">
     <title>KDS Kitchen Display System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Taviraj:wght@500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&family=Fraunces:ital,wght@1,300;1,400&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Prompt', sans-serif; }
-        .order-card { animation: slideDown 0.3s ease-out; }
-        #print-ticket { display: none; }
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* MANA Ratchayothin — Night dining tokens */
+        :root {
+            --bg: #120c09;
+            --bg-raise: #1a120e;
+            --surface: #2a1d18;
+            --surface-2: #211712;
+            --line: #3d2c24;
+            --line-soft: #30231c;
+            --ink: #efe6d8;
+            --ink-muted: #c9b9a6;
+            --ink-faint: #8f7d6e;
+            --brand: #ffebb5;
+            --accent: #e3bb83;
+            --fresh: #8fc29b;
+            --warn: #f2b65a;
+            --late: #ef6a55;
+            --info: #9cc3d8;
+            --radius-block: 4px;
+            --radius-chip: 8px;
+            --radius-panel: 16px;
+            --font-head: 'Taviraj', 'Noto Sans Thai', serif;
+            --font-ui: 'Noto Sans Thai', system-ui, sans-serif;
+            --font-script: 'Fraunces', 'Taviraj', serif;
         }
+
+        * { box-sizing: border-box; }
+        html, body { margin: 0; }
+        body {
+            min-height: 100vh;
+            padding: 16px;
+            background:
+                radial-gradient(1200px 500px at 15% -10%, rgba(227, 187, 131, 0.08), transparent 60%),
+                var(--bg);
+            color: var(--ink);
+            font-family: var(--font-ui);
+            -webkit-font-smoothing: antialiased;
+        }
+        @media (min-width: 768px) { body { padding: 24px; } }
+        button { font: inherit; cursor: pointer; }
+
+        /* ---------- Top bar ---------- */
+        .topbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px 20px;
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, var(--surface), var(--surface-2));
+            border: 1px solid var(--line);
+            border-radius: var(--radius-panel);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+        }
+        .brand { display: flex; align-items: center; gap: 14px; }
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 48px;
+            height: 48px;
+            border: 1px solid rgba(255, 235, 181, 0.45);
+            border-radius: 50%;
+            color: var(--brand);
+            font: 600 26px/1 var(--font-head);
+        }
+        .brand-name {
+            margin: 0;
+            color: var(--brand);
+            font: 600 22px/1.1 var(--font-head);
+            letter-spacing: 0.14em;
+        }
+        .brand-name small { font-size: 14px; letter-spacing: 0.04em; color: var(--accent); margin-left: 6px; }
+        .brand-sub {
+            margin: 4px 0 0;
+            color: var(--ink-muted);
+            font: italic 300 14px/1.2 var(--font-script);
+        }
+
+        .stats { display: flex; align-items: stretch; gap: 10px; flex-wrap: wrap; }
+        .stat {
+            min-width: 112px;
+            padding: 8px 14px;
+            background: rgba(18, 12, 9, 0.55);
+            border: 1px solid var(--line-soft);
+            border-radius: var(--radius-chip);
+        }
+        .stat-label { display: block; color: var(--ink-faint); font-size: 11px; }
+        .stat-value { display: block; margin-top: 2px; font: 600 20px/1.2 var(--font-head); color: var(--ink); font-variant-numeric: tabular-nums; }
+        #order-count { color: var(--brand); }
+        .stat-queue { display: flex; align-items: center; }
+        @media (max-width: 640px) { .legend { display: none; } }
+        .stat.is-warn .stat-value { color: var(--warn); }
+        .stat.is-late .stat-value { color: var(--late); }
+
+        .tools { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .tool-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 40px;
+            padding: 0 14px;
+            background: transparent;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-chip);
+            color: var(--ink);
+            font-size: 13px;
+            font-weight: 500;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .tool-btn:hover { background: rgba(255, 235, 181, 0.06); border-color: rgba(255, 235, 181, 0.35); }
+        .tool-btn .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-faint); }
+        #audio-btn { border-color: rgba(242, 182, 90, 0.6); color: var(--warn); }
+        #audio-btn .dot { background: var(--warn); animation: blink 1.2s infinite; }
+        #audio-btn.is-on { border-color: rgba(143, 194, 155, 0.5); color: var(--fresh); }
+        #audio-btn.is-on .dot { background: var(--fresh); animation: none; }
+        .meta-line { width: 100%; display: flex; justify-content: space-between; gap: 12px; color: var(--ink-faint); font-size: 11px; }
+        .live { display: inline-flex; align-items: center; gap: 6px; }
+        .live::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--fresh); box-shadow: 0 0 0 3px rgba(143, 194, 155, 0.18); }
+        .legend { display: inline-flex; gap: 12px; }
+        .legend span::before { content: ''; display: inline-block; width: 8px; height: 8px; margin-right: 5px; border-radius: 2px; vertical-align: 0; }
+        .legend .l-fresh::before { background: var(--fresh); }
+        .legend .l-warn::before { background: var(--warn); }
+        .legend .l-late::before { background: var(--late); }
+
+        /* ---------- Alerts ---------- */
+        #connection-error {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: rgba(239, 106, 85, 0.12);
+            border: 1px solid rgba(239, 106, 85, 0.5);
+            border-left-width: 4px;
+            border-radius: var(--radius-chip);
+            color: #ffd3ca;
+            font-size: 14px;
+        }
+        .hidden { display: none !important; }
+
+        /* ---------- Order grid ---------- */
+        #orders-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            align-items: start;
+        }
+        .empty-state {
+            grid-column: 1 / -1;
+            padding: 80px 16px;
+            text-align: center;
+            color: var(--ink-muted);
+            border: 1px dashed var(--line);
+            border-radius: var(--radius-panel);
+        }
+        .empty-state h2 { margin: 0 0 6px; color: var(--brand); font: 600 26px/1.3 var(--font-head); }
+        .empty-state p { margin: 0; font: italic 300 16px/1.4 var(--font-script); }
+
+        .order-card {
+            --state: var(--fresh);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-top: 4px solid var(--state);
+            border-radius: var(--radius-panel);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        .order-card.is-warn { --state: var(--warn); }
+        .order-card.is-late { --state: var(--late); box-shadow: 0 0 0 1px rgba(239, 106, 85, 0.35), 0 8px 24px rgba(0, 0, 0, 0.35); }
+        .order-card.is-new { animation: slideDown 0.35s ease-out, newGlow 1.6s ease-in-out 3; }
+
+        .card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px 10px;
+        }
+        .room-label { color: var(--ink-faint); font-size: 11px; letter-spacing: 0.04em; }
+        .room-no {
+            margin-top: 2px;
+            color: var(--brand);
+            font: 700 34px/1 var(--font-head);
+            word-break: break-word;
+        }
+        .timer {
+            flex-shrink: 0;
+            min-width: 86px;
+            padding: 6px 10px;
+            text-align: center;
+            background: color-mix(in srgb, var(--state) 14%, transparent);
+            border: 1px solid color-mix(in srgb, var(--state) 45%, transparent);
+            border-radius: var(--radius-chip);
+            color: var(--state);
+        }
+        .timer-value { display: block; font: 700 22px/1.1 var(--font-ui); font-variant-numeric: tabular-nums; }
+        .timer-label { display: block; font-size: 10px; opacity: 0.85; }
+        .order-card.is-late .timer { animation: pulse 1.6s ease-in-out infinite; }
+
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px 12px;
+            padding: 0 16px 12px;
+            color: var(--ink-muted);
+            font-size: 12px;
+        }
+        .card-meta .order-id { font-variant-numeric: tabular-nums; color: var(--ink-faint); }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: var(--radius-block);
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            text-decoration: none;
+        }
+        .badge-slip { background: rgba(156, 195, 216, 0.15); color: var(--info); border: 1px solid rgba(156, 195, 216, 0.35); }
+        .badge-slip:hover { background: rgba(156, 195, 216, 0.25); }
+        .badge-room { background: rgba(156, 195, 216, 0.1); color: var(--info); }
+        .badge-cash { background: rgba(255, 235, 181, 0.12); color: var(--brand); }
+        .badge-missing { background: rgba(239, 106, 85, 0.15); color: #ffb3a6; border: 1px solid rgba(239, 106, 85, 0.4); }
+
+        .items {
+            margin: 0 12px;
+            padding: 4px 12px;
+            background: var(--bg-raise);
+            border: 1px solid var(--line-soft);
+            border-radius: var(--radius-chip);
+        }
+        .items-title { display: flex; justify-content: space-between; margin: 8px 0 2px; color: var(--ink-faint); font-size: 11px; }
+        .menu-item-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--line-soft);
+        }
+        .menu-item-row:last-child { border-bottom: 0; }
+        .item-name { flex: 1; min-width: 0; font-size: 16px; font-weight: 500; line-height: 1.4; word-break: break-word; }
+        .item-note { display: block; margin-top: 2px; color: var(--accent); font-size: 13px; font-weight: 400; }
+        .item-qty {
+            flex-shrink: 0;
+            min-width: 40px;
+            padding: 2px 8px;
+            text-align: center;
+            background: rgba(255, 235, 181, 0.12);
+            border-radius: var(--radius-block);
+            color: var(--brand);
+            font: 700 17px/1.4 var(--font-ui);
+            font-variant-numeric: tabular-nums;
+        }
+        .item-qty.is-multi { background: var(--brand); color: var(--bg); }
+        .no-items { padding: 10px 0; color: var(--ink-faint); }
+
+        .card-foot { padding: 12px 16px 16px; }
+        .total-line { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+        .total-label { color: var(--ink-faint); font-size: 12px; }
+        .total-value { color: var(--brand); font: 600 20px/1 var(--font-head); font-variant-numeric: tabular-nums; }
+        .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .btn {
+            min-height: 44px;
+            padding: 0 12px;
+            border-radius: var(--radius-chip);
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.08s, background 0.15s, border-color 0.15s;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-serve {
+            grid-column: 1 / -1;
+            min-height: 52px;
+            background: var(--brand);
+            border: 0;
+            color: #2a1d18;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .btn-serve:hover { background: #fff3cf; }
+        .btn-ghost { background: transparent; border: 1px solid var(--line); color: var(--ink); }
+        .btn-ghost:hover { border-color: rgba(255, 235, 181, 0.4); background: rgba(255, 235, 181, 0.05); }
+        .btn-danger { background: transparent; border: 1px solid rgba(239, 106, 85, 0.5); color: #ffb3a6; }
+        .btn-danger:hover { background: rgba(239, 106, 85, 0.12); }
+        .actions .btn-wide { grid-column: 1 / -1; }
+        .btn:focus-visible, .tool-btn:focus-visible, .badge:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+        #print-ticket { display: none; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes newGlow { 50% { box-shadow: 0 0 0 2px var(--brand), 0 0 28px rgba(255, 235, 181, 0.35); } }
+        @keyframes pulse { 50% { background: color-mix(in srgb, var(--state) 30%, transparent); } }
+        @keyframes blink { 50% { opacity: 0.3; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before { animation: none !important; transition: none !important; }
+        }
+
         @media print {
             @page { margin: 4mm; }
             body.printing-order {
@@ -58,38 +352,57 @@
         }
     </style>
 </head>
-<body class="bg-gray-950 text-gray-100 min-h-screen p-4 md:p-6">
+<body>
 
-    <header class="flex flex-col md:flex-row justify-between items-center bg-gray-900 p-4 rounded-xl border border-gray-800 shadow-xl mb-6">
-        <div class="flex items-center gap-3">
-            <span class="text-3xl">👨‍🍳</span>
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-mark" aria-hidden="true">M</div>
             <div>
-                <h1 class="text-2xl font-bold text-amber-400">หน้าจอสั่งการห้องครัว (KDS)</h1>
-                <p class="text-xs text-gray-400">ระบบรับออเดอร์เรียลไทม์</p>
+                <h1 class="brand-name">MANA <small>Ratchayothin</small></h1>
+                <p class="brand-sub">Kitchen Display · หน้าจอครัว</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-4 mt-4 md:mt-0">
-            <button id="audio-btn" onclick="enableAudio()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow flex items-center gap-2 transition">
-                <span id="audio-icon">🔔</span> <span id="audio-status">เปิดเสียงเตือน</span>
-            </button>
-
-            <button onclick="openSheet()" title="กดค้างไว้หรือคลิกขวาเพื่อเปลี่ยนลิงก์" oncontextmenu="event.preventDefault(); setSheetUrl()" class="bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow flex items-center gap-2 transition">
-                📊 <span>เปิด Sheets</span>
-            </button>
-
-            <div class="text-right">
-                <span id="order-count" class="bg-amber-500 text-gray-950 font-bold px-3 py-1 rounded-full text-xs">ออเดอร์ค้าง: 0</span>
-                <p id="last-update" class="text-[10px] text-gray-400 mt-1">อัปเดตล่าสุด: -</p>
+        <div class="stats">
+            <div class="stat">
+                <span class="stat-label">เวลาตอนนี้</span>
+                <span class="stat-value" id="clock">--:--</span>
             </div>
+            <div class="stat stat-queue">
+                <span class="stat-value" id="order-count">ออเดอร์ค้าง: 0</span>
+            </div>
+            <div class="stat" id="oldest-stat">
+                <span class="stat-label">รอนานสุด</span>
+                <span class="stat-value" id="oldest-wait">-</span>
+            </div>
+        </div>
+
+        <div class="tools">
+            <button id="audio-btn" onclick="enableAudio()" class="tool-btn">
+                <span class="dot" aria-hidden="true"></span><span id="audio-status">แตะเพื่อเปิดเสียงเตือน</span>
+            </button>
+            <button onclick="openSheet()" title="กดค้างไว้หรือคลิกขวาเพื่อเปลี่ยนลิงก์" oncontextmenu="event.preventDefault(); setSheetUrl()" class="tool-btn">
+                เปิด Sheets
+            </button>
+            <button onclick="toggleFullscreen()" class="tool-btn" title="แสดงเต็มจอ">เต็มจอ</button>
+        </div>
+
+        <div class="meta-line">
+            <span class="live" id="last-update">อัปเดตล่าสุด: -</span>
+            <span class="legend" aria-label="สีบอกเวลารอ">
+                <span class="l-fresh">ไม่เกิน 10 นาที</span>
+                <span class="l-warn">10–20 นาที</span>
+                <span class="l-late">เกิน 20 นาที</span>
+            </span>
         </div>
     </header>
 
-    <div id="connection-error" class="hidden bg-red-900/60 border border-red-700 text-red-100 text-sm rounded-xl p-3 mb-4"></div>
+    <div id="connection-error" class="hidden" role="alert"></div>
 
-    <main id="orders-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <div class="col-span-full text-center py-16 text-gray-500">
-            <p class="text-base">กำลังรอรับออเดอร์จากลูกค้า...</p>
+    <main id="orders-container">
+        <div class="empty-state">
+            <h2>กำลังเชื่อมต่อ…</h2>
+            <p>Waiting for the first orders of the service</p>
         </div>
     </main>
 
@@ -101,9 +414,14 @@
         // ถ้าเว้นว่าง ปุ่ม "เปิด Sheets" จะถามลิงก์ครั้งแรกแล้วจำไว้ในเครื่องนั้น
         const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1cqtqFcxvCM_l6aZpkscfP76ndsg5RyM7Qv92-Qmb_EU/edit?gid=1306309405#gid=1306309405';
         const SHEET_URL_KEY = 'kds_sheet_url';
+        // เกณฑ์สีตามเวลารอ (นาที): เขียว → เหลือง → แดง
+        const WARN_MINUTES = 10;
+        const LATE_MINUTES = 20;
         let previousOrderCount = -1;
         let audioContext = null;
         let pendingOrdersForPrint = [];
+        const firstSeenAt = new Map();
+        let hasRendered = false;
 
         function escapeHtml(value) {
             return String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({
@@ -154,14 +472,23 @@
             });
         }
 
+        // แยกหมายเหตุท้ายชื่อเมนู เช่น "Coffee [no sugar]" → แสดงหมายเหตุเป็นบรรทัดรองสีทอง
+        function splitItemNote(name) {
+            const match = String(name).match(/^(.*?)\s*\[([^\]]+)\]\s*$/);
+            return match ? { main: match[1], note: match[2] } : { main: String(name), note: '' };
+        }
+
         function renderMenuRows(order) {
             const items = menuItemsForDisplay(order);
-            if (!items.length) return '<div class="text-gray-400">ไม่พบรายการ</div>';
-            return items.map(item => `
-                <div class="menu-item-row flex items-start justify-between gap-3 border-b border-gray-800 last:border-0 py-2">
-                    <span class="min-w-0 flex-1 break-words">${escapeHtml(item.name)}</span>
-                    ${item.quantity ? `<strong class="shrink-0 text-amber-300">×${item.quantity}</strong>` : ''}
-                </div>`).join('');
+            if (!items.length) return '<div class="no-items">ไม่พบรายการ</div>';
+            return items.map(item => {
+                const { main, note } = splitItemNote(item.name);
+                return `
+                <div class="menu-item-row">
+                    <span class="item-name">${escapeHtml(main)}${note ? `<span class="item-note">${escapeHtml(note)}</span>` : ''}</span>
+                    ${item.quantity ? `<strong class="item-qty${item.quantity > 1 ? ' is-multi' : ''}">×${item.quantity}</strong>` : ''}
+                </div>`;
+            }).join('');
         }
 
         function printableItems(order) {
@@ -209,17 +536,17 @@
                 const now = audioContext.currentTime;
                 const osc = audioContext.createOscillator();
                 const gain = audioContext.createGain();
-                
+
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(587.33, now); // D5
                 osc.frequency.setValueAtTime(880, now + 0.15); // A5
-                
+
                 gain.gain.setValueAtTime(0.3, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
-                
+
                 osc.connect(gain);
                 gain.connect(audioContext.destination);
-                
+
                 osc.start(now);
                 osc.stop(now + 0.8);
             } catch (e) {
@@ -231,10 +558,16 @@
             if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
             audioContext.resume();
             playChimeSound();
-            
-            document.getElementById('audio-btn').className = "bg-green-600 text-white text-xs font-semibold py-2 px-3 rounded-lg shadow flex items-center gap-2";
-            document.getElementById('audio-icon').innerText = '🔊';
-            document.getElementById('audio-status').innerText = 'เปิดเสียงเตือนแล้ว';
+
+            document.getElementById('audio-btn').classList.add('is-on');
+            document.getElementById('audio-status').innerText = 'เสียงเตือนเปิดอยู่';
+        }
+
+        function toggleFullscreen() {
+            try {
+                if (document.fullscreenElement) document.exitFullscreen();
+                else if (document.documentElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+            } catch (e) {}
         }
 
         function getSheetUrl() {
@@ -260,8 +593,82 @@
 
         function setConnectionError(message) {
             const el = document.getElementById('connection-error');
-            el.textContent = message ? `⚠️ เชื่อมต่อระบบออเดอร์ไม่ได้: ${message}` : '';
+            el.textContent = message ? `เชื่อมต่อระบบออเดอร์ไม่ได้: ${message}` : '';
             el.classList.toggle('hidden', !message);
+        }
+
+        // ---------- เวลารอของแต่ละออเดอร์ ----------
+        function orderKey(order) {
+            return String(order.orderId || `row-${order.rowIndex || ''}-${order.room || ''}-${order.timestamp || ''}`);
+        }
+
+        // อ่านเวลาจาก Sheets (เช่น 26/11/2026, 18:03:12 หรือ 11/26/2026 18:03:12 / ปี พ.ศ.)
+        // ถ้าอ่านไม่ได้ ใช้เวลาที่หน้าจอนี้เห็นออเดอร์ครั้งแรกแทน
+        function parseOrderTime(raw, now) {
+            const m = String(raw || '').match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4}),?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+            if (!m) return null;
+            const [a, b, y0, h, mi, s] = m.slice(1).map(v => Number(v || 0));
+            const y = y0 > 2400 ? y0 - 543 : y0;
+            const candidates = [new Date(y, b - 1, a, h, mi, s), new Date(y, a - 1, b, h, mi, s)]
+                .map(d => d.getTime())
+                .filter(t => !Number.isNaN(t) && t <= now + 5 * 60000 && now - t < 48 * 3600000)
+                .sort((p, q) => (now - p) - (now - q));
+            return candidates.length ? candidates[0] : null;
+        }
+
+        function orderStartTime(order, now) {
+            const key = orderKey(order);
+            if (!firstSeenAt.has(key)) firstSeenAt.set(key, now);
+            return parseOrderTime(order.timestamp || order.time, now) || firstSeenAt.get(key);
+        }
+
+        function urgencyClass(minutes) {
+            if (minutes >= LATE_MINUTES) return 'is-late';
+            if (minutes >= WARN_MINUTES) return 'is-warn';
+            return 'is-fresh';
+        }
+
+        function formatElapsed(ms) {
+            const total = Math.max(0, Math.floor(ms / 1000));
+            const h = Math.floor(total / 3600);
+            const m = Math.floor((total % 3600) / 60);
+            const s = total % 60;
+            const pad = (n) => String(n).padStart(2, '0');
+            return h ? `${h}:${pad(m)}:${pad(s)}` : `${pad(m)}:${pad(s)}`;
+        }
+
+        function formatClock(ms) {
+            const d = new Date(ms);
+            return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        }
+
+        function updateTimers() {
+            const now = Date.now();
+            const clock = document.getElementById('clock');
+            if (clock) clock.innerText = formatClock(now);
+
+            let oldest = 0;
+            const cards = document.querySelectorAll ? document.querySelectorAll('.order-card[data-start]') : [];
+            cards.forEach((card) => {
+                const elapsed = now - Number(card.dataset.start);
+                oldest = Math.max(oldest, elapsed);
+                const value = card.querySelector('.timer-value');
+                if (value) value.textContent = formatElapsed(elapsed);
+                const state = urgencyClass(elapsed / 60000);
+                if (!card.classList.contains(state)) {
+                    card.classList.remove('is-fresh', 'is-warn', 'is-late');
+                    card.classList.add(state);
+                }
+            });
+
+            const oldestEl = document.getElementById('oldest-wait');
+            const oldestStat = document.getElementById('oldest-stat');
+            if (oldestEl) oldestEl.innerText = cards.length ? `${Math.floor(oldest / 60000)} นาที` : '-';
+            if (oldestStat && oldestStat.classList) {
+                const minutes = oldest / 60000;
+                oldestStat.classList.toggle('is-warn', cards.length > 0 && minutes >= WARN_MINUTES && minutes < LATE_MINUTES);
+                oldestStat.classList.toggle('is-late', cards.length > 0 && minutes >= LATE_MINUTES);
+            }
         }
 
         async function fetchOrders() {
@@ -285,6 +692,16 @@
             }
         }
 
+        function paymentBadgeFor(order) {
+            const slipUrl = safeSlipUrl(order.slip);
+            const payment = String(order.payment || '');
+            if (slipUrl) return `<a href="${escapeHtml(slipUrl)}" target="_blank" rel="noopener" class="badge badge-slip">ดูสลิป</a>`;
+            if (/alipay/i.test(payment)) return `<span class="badge badge-room">Alipay: ชำระที่ห้อง</span>`;
+            if (/restaurant/i.test(payment)) return `<span class="badge badge-cash">ชำระที่ร้าน (บัตร/เงินสด)</span>`;
+            if (order.orderId && Object.prototype.hasOwnProperty.call(order, 'slip')) return `<span class="badge badge-missing">ไม่มีสลิป</span>`;
+            return '';
+        }
+
         function renderOrders(orders) {
             const container = document.getElementById('orders-container');
             const pendingOrders = orders.filter((order) => {
@@ -292,7 +709,7 @@
                 return status !== 'completed' && status !== 'cancelled';
             });
             pendingOrdersForPrint = pendingOrders;
-            
+
             if (previousOrderCount !== -1 && pendingOrders.length > previousOrderCount) {
                 playChimeSound();
             }
@@ -303,66 +720,66 @@
 
             if (pendingOrders.length === 0) {
                 container.innerHTML = `
-                    <div class="col-span-full text-center py-20 text-gray-500">
-                        <p class="text-3xl mb-2">✅</p>
-                        <p class="text-base">ทำอาหารเสร็จครบทุกออเดอร์แล้ว</p>
+                    <div class="empty-state">
+                        <h2>ทำอาหารเสร็จครบทุกออเดอร์แล้ว</h2>
+                        <p>All clear — the pass is clean</p>
                     </div>`;
+                hasRendered = true;
+                updateTimers();
                 return;
             }
 
+            const now = Date.now();
+            const knownKeys = new Set(firstSeenAt.keys());
             container.innerHTML = pendingOrders.map((order, index) => {
-                const slipUrl = safeSlipUrl(order.slip);
-                const payment = String(order.payment || '');
+                const key = orderKey(order);
+                const isNew = hasRendered && !knownKeys.has(key);
+                const start = orderStartTime(order, now);
+                const elapsed = now - start;
                 const cancelReasons = Array.isArray(order.cancelReasonOptions) ? order.cancelReasonOptions : [];
                 const canCancel = order.canCancel === true && cancelReasons.length > 0;
-                const paymentBadge = slipUrl
-                    ? `<a href="${escapeHtml(slipUrl)}" target="_blank" rel="noopener" class="bg-sky-600/20 text-sky-300 text-[11px] font-semibold px-2 py-1 rounded whitespace-nowrap">🧾 ดูสลิป</a>`
-                    : (/alipay/i.test(payment)
-                        ? `<span class="bg-blue-600/20 text-blue-300 text-[11px] font-semibold px-2 py-1 rounded whitespace-nowrap">Alipay: ชำระที่ห้อง</span>`
-                        : (/restaurant/i.test(payment)
-                            ? `<span class="bg-amber-500/20 text-amber-300 text-[11px] font-semibold px-2 py-1 rounded whitespace-nowrap">💵 ชำระที่ร้าน (บัตร/เงินสด)</span>`
-                            : (order.orderId && Object.prototype.hasOwnProperty.call(order, 'slip')
-                                ? `<span class="bg-red-600/20 text-red-300 text-[11px] px-2 py-1 rounded whitespace-nowrap">ไม่มีสลิป</span>`
-                                : '')));
+                const itemCount = menuItemsForDisplay(order).reduce((sum, item) => sum + (item.quantity || 1), 0);
+                const parsed = parseOrderTime(order.timestamp || order.time, now);
+                const orderedAt = parsed ? formatClock(parsed) : (order.timestamp || order.time || '-');
                 return `
-                <div class="order-card bg-gray-900 rounded-xl p-4 border-l-4 border-amber-500 shadow-md border-t border-r border-b border-gray-800 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-start border-b border-gray-800 pb-2 mb-3">
-                            <div>
-                                <span class="bg-amber-500/20 text-amber-400 font-bold px-2.5 py-1 rounded text-sm">
-                                    ห้อง/โต๊ะ: ${escapeHtml(order.room || 'ไม่ระบุ')}
-                                </span>
-                                <p class="text-[10px] text-gray-400 mt-2">🕒 ${escapeHtml(order.timestamp || order.time || '-')}</p>
-                                ${order.orderId ? `<p class="text-[10px] text-gray-500 mt-0.5"># ${escapeHtml(order.orderId)}</p>` : ''}
-                            </div>
-                            ${paymentBadge}
+                <article class="order-card ${urgencyClass(elapsed / 60000)}${isNew ? ' is-new' : ''}" data-start="${start}">
+                    <div class="card-head">
+                        <div>
+                            <div class="room-label">ห้อง/โต๊ะ</div>
+                            <div class="room-no">${escapeHtml(order.room || 'ไม่ระบุ')}</div>
                         </div>
-
-                        <div class="text-gray-200 text-xs leading-relaxed mb-4">
-                            <p class="font-semibold text-gray-400 text-[10px] mb-1">รายการสั่งซื้อ:</p>
-                            <div class="bg-gray-950 p-2.5 rounded-lg border border-gray-800">${renderMenuRows(order)}</div>
+                        <div class="timer" title="เวลาที่รอตั้งแต่สั่ง">
+                            <span class="timer-value">${formatElapsed(elapsed)}</span>
+                            <span class="timer-label">เวลารอ</span>
                         </div>
                     </div>
 
-                    <div class="pt-2 border-t border-gray-800 flex justify-between items-center gap-2">
-                        <span class="text-amber-400 font-bold text-sm">฿${escapeHtml(order.price || '0')}</span>
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="printOrder(${index})" title="เปิดหน้าต่างพิมพ์ แล้วเลือกเครื่อง Bar"
-                                class="bg-sky-700 hover:bg-sky-600 text-white font-semibold text-xs py-2 px-3 rounded-lg transition shadow">
-                                🖨 พิมพ์ Bar
-                            </button>
-                            ${canCancel ? `<button onclick="cancelOrder(${index})" title="ยกเลิกได้เมื่อออเดอร์ค้างเกิน 1 ชั่วโมง"
-                                class="bg-red-700 hover:bg-red-600 text-white font-semibold text-xs py-2 px-3 rounded-lg transition shadow">
-                                ยกเลิกเมนู
-                            </button>` : ''}
-                            <button onclick="updateOrderStatus(${index}, 'Completed')"
-                                class="bg-green-600 hover:bg-green-500 text-white font-semibold text-xs py-2 px-3 rounded-lg transition shadow flex items-center gap-1">
-                                ✅ เสิร์ฟแล้ว
-                            </button>
+                    <div class="card-meta">
+                        <span>สั่งเมื่อ ${escapeHtml(orderedAt)}</span>
+                        ${order.orderId ? `<span class="order-id"># ${escapeHtml(order.orderId)}</span>` : ''}
+                        ${paymentBadgeFor(order)}
+                    </div>
+
+                    <div class="items">
+                        <div class="items-title"><span>รายการสั่งซื้อ</span><span>${itemCount} ที่</span></div>
+                        ${renderMenuRows(order)}
+                    </div>
+
+                    <div class="card-foot">
+                        <div class="total-line">
+                            <span class="total-label">ยอดรวม</span>
+                            <span class="total-value">฿${escapeHtml(order.price || '0')}</span>
+                        </div>
+                        <div class="actions">
+                            <button onclick="printOrder(${index})" title="เปิดหน้าต่างพิมพ์ แล้วเลือกเครื่อง Bar" class="btn btn-ghost${canCancel ? '' : ' btn-wide'}">พิมพ์ Bar</button>
+                            ${canCancel ? `<button onclick="cancelOrder(${index})" title="ยกเลิกได้เมื่อออเดอร์ค้างเกิน 1 ชั่วโมง" class="btn btn-danger">ยกเลิกเมนู</button>` : ''}
+                            <button onclick="updateOrderStatus(${index}, 'Completed')" class="btn btn-serve">เสิร์ฟแล้ว</button>
                         </div>
                     </div>
-                </div>
+                </article>
             `}).join('');
+            hasRendered = true;
+            updateTimers();
         }
 
         async function updateOrderStatus(index, newStatus, reason) {
@@ -423,6 +840,7 @@
 
         fetchOrders();
         setInterval(fetchOrders, 5000); // ดึงข้อมูลอัปเดตทุก 5 วินาที
+        setInterval(updateTimers, 1000); // นับเวลารอทุกวินาที
     </script>
 </body>
 </html>
