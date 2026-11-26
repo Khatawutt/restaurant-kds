@@ -127,18 +127,48 @@
             }
         }
 
-        function printableItems(order) {
+        function menuItemsForDisplay(order) {
             if (Array.isArray(order.items) && order.items.length) {
                 return order.items.map((item) => {
-                    const quantity = Number(item && item.quantity);
-                    const quantityLabel = Number.isInteger(quantity) && quantity > 0
-                        ? `<span class="ticket-quantity"> ×${quantity}</span>`
-                        : '';
-                    return `<li>${escapeHtml(item && (item.name || item.menu))}${quantityLabel}</li>`;
-                }).join('');
+                    const quantity = item && item.quantity !== '' && item.quantity != null
+                        ? Number(item.quantity)
+                        : null;
+                    return {
+                        name: String(item && (item.name || item.menu) || '').trim(),
+                        quantity: Number.isInteger(quantity) && quantity > 0 ? quantity : null
+                    };
+                }).filter(item => item.name);
             }
-            const menu = String(order.menu || '').trim() || 'ไม่พบรายการ';
-            return `<li>${escapeHtml(menu).replace(/\r?\n/g, '<br>')}</li>`;
+            const menu = String(order.menu || '').trim();
+            if (!menu) return [];
+
+            return menu.split(/\r?\n/).flatMap((line) => {
+                const matches = Array.from(line.matchAll(/([^,\n]+?\s+\(x\d+\)(?:\s+\[[^\]]*\])?)(?=,\s+|$)/g));
+                const entries = matches.length ? matches.map(match => match[1].trim()) : [line.trim()];
+                return entries.map((entry) => {
+                    const match = entry.match(/^(.*?)\s+\(x(\d+)\)(?:\s+\[([^\]]*)\])?$/);
+                    return match
+                        ? { name: match[1] + (match[3] ? ` [${match[3]}]` : ''), quantity: Number(match[2]) }
+                        : { name: entry, quantity: null };
+                }).filter(item => item.name);
+            });
+        }
+
+        function renderMenuRows(order) {
+            const items = menuItemsForDisplay(order);
+            if (!items.length) return '<div class="text-gray-400">ไม่พบรายการ</div>';
+            return items.map(item => `
+                <div class="menu-item-row flex items-start justify-between gap-3 border-b border-gray-800 last:border-0 py-2">
+                    <span class="min-w-0 flex-1 break-words">${escapeHtml(item.name)}</span>
+                    ${item.quantity ? `<strong class="shrink-0 text-amber-300">×${item.quantity}</strong>` : ''}
+                </div>`).join('');
+        }
+
+        function printableItems(order) {
+            return menuItemsForDisplay(order).map(item => {
+                const quantityLabel = item.quantity ? `<span class="ticket-quantity"> ×${item.quantity}</span>` : '';
+                return `<li>${escapeHtml(item.name)}${quantityLabel}</li>`;
+            }).join('');
         }
 
         function printOrder(index) {
@@ -310,7 +340,7 @@
 
                         <div class="text-gray-200 text-xs leading-relaxed mb-4">
                             <p class="font-semibold text-gray-400 text-[10px] mb-1">รายการสั่งซื้อ:</p>
-                            <p class="bg-gray-950 p-2.5 rounded-lg border border-gray-800">${escapeHtml(order.menu || '').replace(/\r?\n/g, '<br>')}</p>
+                            <div class="bg-gray-950 p-2.5 rounded-lg border border-gray-800">${renderMenuRows(order)}</div>
                         </div>
                     </div>
 

@@ -101,8 +101,8 @@ async function run() {
     timestamp: '18:03',
     status: 'Pending',
     payment: 'Alipay (pay at room)',
-    items: [{ name: 'Tea <script>', quantity: 2 }],
-    menu: 'Tea <script> (x2)',
+    items: [{ name: 'Tea <script>', quantity: 2 }, { name: 'Coffee', quantity: 1 }],
+    menu: 'Tea <script> (x2)\nCoffee (x1)',
     rowIndex: 2
   };
 
@@ -113,6 +113,8 @@ async function run() {
   const cards = document.getElementById('orders-container').innerHTML;
   assert(cards.includes('พิมพ์ Bar'), 'KDS card exposes a manual Bar print button');
   assert(cards.includes('&lt;script&gt;'), 'order text is escaped in the KDS card');
+  assert.strictEqual((cards.match(/menu-item-row/g) || []).length, 2, 'each item is rendered in its own row');
+  assert(cards.indexOf('Tea &lt;script&gt;') < cards.indexOf('×2'), 'quantity follows the item name');
   assert(cards.includes('Alipay: ชำระที่ห้อง'), 'Alipay is not shown as a missing-slip order');
   assert(!cards.includes('ไม่มีสลิป'), 'Alipay does not show the missing-slip badge');
 
@@ -124,6 +126,7 @@ async function run() {
   assert(ticket.includes('ห้อง/โต๊ะ</span><strong>101'), 'ticket includes room');
   assert(ticket.includes('Tea &lt;script&gt;'), 'ticket escapes item names');
   assert(ticket.includes('×2'), 'ticket includes item quantity');
+  assert(ticket.includes('Coffee'), 'ticket includes every order item');
   assert.strictEqual(fetchCalls, 1, 'printing does not send another order to the API');
 
   listeners.afterprint();
@@ -144,13 +147,15 @@ async function run() {
     orderId: 'OLD-1',
     room: '102',
     timestamp: '17:00',
-    menu: 'Coffee (x1)\nTea (x2)',
+    menu: 'Coffee (x1) [no sugar, oat milk], Tea (x2)',
     slip: '',
     status: 'Pending'
   }]);
   assert(document.getElementById('orders-container').innerHTML.includes('ไม่มีสลิป'), 'legacy API still warns when its slip field is empty');
+  assert.strictEqual((document.getElementById('orders-container').innerHTML.match(/menu-item-row/g) || []).length, 2, 'legacy comma-separated menu text is split into rows');
   context.printOrder(0);
-  assert(document.getElementById('print-ticket').innerHTML.includes('Coffee (x1)<br>Tea (x2)'), 'legacy menu text prints as separate lines');
+  assert(document.getElementById('print-ticket').innerHTML.includes('Coffee [no sugar, oat milk]'), 'legacy item notes stay together when split');
+  assert(document.getElementById('print-ticket').innerHTML.includes('×2'), 'legacy item quantity prints separately');
   assert.strictEqual(printCalls, 2, 'each explicit click prints one ticket');
 
   context.renderOrders([{
