@@ -294,6 +294,22 @@ async function run() {
   assert(!storage.has('kds_action_token'), 'rejected token is forgotten');
   assert(document.getElementById('connection-error').textContent.includes('รหัสผู้จัดการไม่ถูกต้อง'), 'authorization errors are shown in Thai');
 
+  // ---------- Legacy single-row order cancellation ----------
+  storage.set('kds_action_token', 'secret-token');
+  const legacy = { room: '2504 (Linda Nasse)', price: '1370', status: 'Pending', rowIndex: 40,
+    menu: 'Pizza (x1), Coke (x2)', items: [{ name: 'Pizza (x1), Coke (x2)', quantity: '', rowIndex: 40, status: 'Pending' }] };
+  context.renderOrders([legacy]);
+  const legacyHtml = document.getElementById('orders-container').innerHTML;
+  assert(legacyHtml.includes('cancelLegacyOrder(0)'), 'legacy pending orders get a whole-order cancel button');
+  assert.strictEqual((legacyHtml.match(/menu-item-row/g) || []).length, 2, 'legacy menu text is still split into rows');
+  await context.cancelLegacyOrder(0);
+  const legacyPayload = JSON.parse(requests.findLast(r => r.options.method === 'POST').options.body);
+  assert.strictEqual(legacyPayload.action, 'cancelItem', 'legacy cancel uses cancelItem');
+  assert.strictEqual(legacyPayload.rowIndex, 40, 'legacy cancel targets the order row');
+  assert(!('orderId' in legacyPayload), 'legacy cancel sends no order id');
+  context.renderOrders([Object.assign({}, legacy, { status: 'Completed' })]);
+  assert(!document.getElementById('orders-container').innerHTML.includes('cancelLegacyOrder('), 'completed legacy orders cannot be cancelled');
+
   // ---------- Sales closing report ----------
   const todayKey = context.bangkokDateKey(new Date());
   context.renderOrders([itemOrder]);
