@@ -11,6 +11,11 @@ let printCalls = 0;
 let fetchCalls = 0;
 let confirmCalls = 0;
 let confirmResult = true;
+let promptCalls = 0;
+let promptResult = 'secret-token';
+let nextPostResponse = null;
+let nextSummary = null;
+const storage = new Map();
 const requests = [];
 
 function makeElement() {
@@ -71,6 +76,7 @@ const window = {
   AudioContext: MockAudioContext,
   print() { printCalls += 1; },
   confirm() { confirmCalls += 1; return confirmResult; },
+  prompt() { promptCalls += 1; return promptResult; },
   addEventListener(name, callback) { listeners[name] = callback; }
 };
 const context = vm.createContext({
@@ -78,12 +84,23 @@ const context = vm.createContext({
   window,
   console,
   URL,
+  localStorage: {
+    getItem(key) { return storage.has(key) ? storage.get(key) : null; },
+    setItem(key, value) { storage.set(key, String(value)); },
+    removeItem(key) { storage.delete(key); }
+  },
   fetch: async (url, options = {}) => {
     fetchCalls += 1;
     requests.push({ url, options });
-    const body = options.method === 'POST'
-      ? { status: 'success' }
-      : { status: 'success', orders: [] };
+    let body;
+    if (options.method === 'POST') {
+      body = nextPostResponse || { status: 'success' };
+      nextPostResponse = null;
+    } else if (String(url).includes('getDailySalesSummary')) {
+      body = { status: 'success', summary: nextSummary };
+    } else {
+      body = { status: 'success', orders: [] };
+    }
     return { ok: true, text: async () => JSON.stringify(body) };
   },
   setInterval() {}
@@ -223,6 +240,110 @@ async function run() {
   assert(real.includes('No onion, no garlic Extra spicy'), 'multi-line note is joined');
   assert(real.includes('>2504</h2>') && real.includes('Linda Nasse'), 'room number and guest name are split');
   assert(real.includes('1,370'), 'price gets a thousands separator');
+
+  // ---------- Single menu item cancellation ----------
+  const itemOrder = {
+    orderId: 'ITEM-1',
+    room: '301',
+    status: 'Pending',
+    createdAt: new Date().toISOString(),
+    rowIndex: 20,
+    items: [
+      { name: 'Soup', quantity: 1, rowIndex: 20, status: 'Pending', cancelReason: '' },
+      { name: 'Salad', quantity: 2, rowIndex: 21, status: 'Pending', cancelReason: '' },
+      { name: 'Juice', quantity: 1, rowIndex: 22, status: 'Cancelled', cancelReason: 'ลูกค้าไม่เอาแล้ว' }
+    ]
+  };
+  context.renderOrders([itemOrder]);
+  let itemHtml = document.getElementById('orders-container').innerHTML;
+  assert.strictEqual((itemHtml.match(/cancelMenuItem\(/g) || []).length, 2, 'every pending item gets its own cancel button');
+  assert(itemHtml.includes('is-cancelled'), 'cancelled items stay visible but struck through');
+  assert(itemHtml.includes('ยกเลิก · ลูกค้าไม่เอาแล้ว'), 'cancelled item shows its reason');
+  assert(itemHtml.includes('ยกเลิก 1 รายการ · ยอดยังไม่หักอัตโนมัติ'), 'card warns that the price is not reduced');
+  context.printOrder(0);
+  const itemTicket = document.getElementById('print-ticket').innerHTML;
+  assert(!itemTicket.includes('Juice'), 'cancelled items are not printed on the Bar ticket');
+  assert(itemTicket.includes('Salad'), 'active items are still printed');
+  listeners.afterprint();
+
+  context.renderOrders([{ orderId: '', room: '302', status: 'Pending', items: [{ name: 'Tea', quantity: 1, rowIndex: 30, status: 'Pending' }] }]);
+  assert(!document.getElementById('orders-container').innerHTML.includes('cancelMenuItem('), 'items without an order id cannot be cancelled individually');
+
+  context.renderOrders([itemOrder]);
+  confirmResult = false;
+  let postsBefore = requests.filter(request => request.options.method === 'POST').length;
+  await context.cancelMenuItem(0, 1);
+  assert.strictEqual(requests.filter(request => request.options.method === 'POST').length, postsBefore, 'declining item cancellation sends nothing');
+  assert.strictEqual(promptCalls, 0, 'token is not requested before confirmation');
+
+  confirmResult = true;
+  await context.cancelMenuItem(0, 1);
+  let itemRequest = requests.findLast(request => request.options.method === 'POST');
+  let itemPayload = JSON.parse(itemRequest.options.body);
+  assert.strictEqual(itemPayload.action, 'cancelItem', 'item cancellation uses the cancelItem action');
+  assert.strictEqual(itemPayload.orderId, 'ITEM-1', 'item cancellation sends the order id');
+  assert.strictEqual(itemPayload.rowIndex, 21, 'item cancellation targets the selected row');
+  assert.strictEqual(itemPayload.token, 'secret-token', 'item cancellation sends the manager token');
+  assert.strictEqual(promptCalls, 1, 'manager token is requested once');
+  assert.strictEqual(storage.get('kds_action_token'), 'secret-token', 'manager token is remembered on this device');
+
+  context.renderOrders([itemOrder]);
+  nextPostResponse = { status: 'error', message: 'KDS authorization failed' };
+  await context.cancelMenuItem(0, 0);
+  assert.strictEqual(promptCalls, 1, 'stored token is reused');
+  assert(!storage.has('kds_action_token'), 'rejected token is forgotten');
+  assert(document.getElementById('connection-error').textContent.includes('รหัสผู้จัดการไม่ถูกต้อง'), 'authorization errors are shown in Thai');
+
+  // ---------- Sales closing report ----------
+  const todayKey = context.bangkokDateKey(new Date());
+  context.renderOrders([itemOrder]);
+  nextSummary = {
+    date: todayKey, completedOrderCount: 5, pendingOrderCount: 1, cancelledOrderCount: 2,
+    ordersWithoutAmount: 0, totalSales: 2450.5, paymentTotals: { 'Alipay (pay at room)': 1450.5, 'Pay at restaurant': 1000 },
+    closed: false, closedAt: ''
+  };
+  await context.openSalesReport();
+  let report = document.getElementById('sales-body').innerHTML;
+  assert(requests.findLast(r => !r.options.method).url.includes(`action=getDailySalesSummary&date=${todayKey}`), 'report requests today in Bangkok time');
+  assert(report.includes('฿2,450.5'), 'report shows total sales');
+  assert(report.includes('Alipay (pay at room)') && report.includes('฿1,450.5'), 'report splits sales by payment method');
+  assert(report.includes('ห้อง 301 · Juice'), 'report lists cancelled items of the day');
+  assert(report.includes('ยังมีออเดอร์ค้าง 1 ออเดอร์'), 'report explains why closing is blocked');
+  assert.strictEqual(document.getElementById('sales-close-btn').disabled, true, 'closing is disabled while orders are pending');
+
+  nextSummary = Object.assign({}, nextSummary, { pendingOrderCount: 0 });
+  await context.openSalesReport();
+  assert.strictEqual(document.getElementById('sales-close-btn').disabled, false, 'closing is enabled once nothing is pending');
+
+  confirmResult = false;
+  postsBefore = requests.filter(request => request.options.method === 'POST').length;
+  await context.confirmCloseSales();
+  assert.strictEqual(requests.filter(request => request.options.method === 'POST').length, postsBefore, 'declining close sends nothing');
+
+  confirmResult = true;
+  promptResult = 'secret-token';
+  nextPostResponse = { status: 'success', summary: Object.assign({}, nextSummary, { closed: true, closedAt: '2026-11-27T15:30:00.000Z' }) };
+  await context.confirmCloseSales();
+  const closeRequest = requests.findLast(request => request.options.method === 'POST');
+  const closePayload = JSON.parse(closeRequest.options.body);
+  assert.strictEqual(closePayload.action, 'closeDailySales', 'close uses the closeDailySales action');
+  assert.strictEqual(closePayload.date, todayKey, 'close sends today date');
+  assert.strictEqual(closePayload.token, 'secret-token', 'close sends the manager token');
+  report = document.getElementById('sales-body').innerHTML;
+  assert(report.includes('ปิดรอบแล้ว เวลา 22:30 น.'), 'closed time is shown in Bangkok time');
+  assert.strictEqual(document.getElementById('sales-close-btn').disabled, true, 'a closed day cannot be closed again');
+  assert.strictEqual(document.getElementById('close-shift-label').innerText, 'ปิดรอบแล้ว · ดูรายงาน', 'header shows the day is closed');
+
+  const printsBefore = printCalls;
+  context.printSalesReport();
+  const reportTicket = document.getElementById('print-ticket').innerHTML;
+  assert.strictEqual(printCalls, printsBefore + 1, 'report printing calls window.print once');
+  assert(reportTicket.includes('SALES CLOSING REPORT') && reportTicket.includes('฿2,450.5'), 'printed report includes totals');
+  listeners.afterprint();
+  context.closeSalesModal();
+  assert(document.getElementById('sales-modal').classList.contains('hidden'), 'report modal can be closed');
+
+  assert.strictEqual(context.translateApiError('Cannot close sales while 3 order(s) are still pending'), 'ยังมีออเดอร์ค้าง 3 ออเดอร์ — กด "เสิร์ฟแล้ว" หรือยกเลิกให้ครบก่อนปิดรอบ', 'pending-close errors are translated');
 
   console.log('KDS print tests passed');
 }
