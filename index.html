@@ -493,8 +493,21 @@
                 && String(item.status || '').trim().toLowerCase() === 'pending');
         }
 
+        // ออเดอร์เก่า (ไม่มี Order ID, ทั้งออเดอร์อยู่แถวเดียว) → ยกเลิกได้ทั้งออเดอร์ด้วย rowIndex
+        function legacyCancelRow(order) {
+            if (!order || order.orderId) return null;
+            const rows = Array.isArray(order.items) && order.items.length
+                ? order.items
+                : [{ rowIndex: order.rowIndex, status: order.status }];
+            if (rows.length !== 1) return null;
+            const row = rows[0];
+            const rowIndex = Number(row.rowIndex);
+            if (!Number.isInteger(rowIndex) || rowIndex < 2) return null;
+            return String(row.status || order.status || '').trim().toLowerCase() === 'pending' ? rowIndex : null;
+        }
+
         function menuItemsForDisplay(order) {
-            if (Array.isArray(order.items) && order.items.length) {
+            if (Array.isArray(order.items) && order.items.length && order.orderId) {
                 return order.items.map((item, index) => {
                     const quantity = item && item.quantity !== '' && item.quantity != null
                         ? Number(item.quantity)
@@ -799,6 +812,7 @@
                             ${cancelledItemCount ? `<span class="price-note">ยกเลิก ${cancelledItemCount} รายการ · ยอดยังไม่หักอัตโนมัติ</span>` : ''}
                         </span>
                         <div class="btns">
+                            ${!canCancel && legacyCancelRow(order) ? `<button class="btn btn-cancel" onclick="cancelLegacyOrder(${index})" title="ลูกค้าไม่เอาออเดอร์นี้แล้ว"${busy ? ' disabled' : ''}>✕ ยกเลิกออเดอร์</button>` : ''}
                             ${canCancel ? `<button class="btn btn-cancel" onclick="cancelOrder(${index})" title="ยกเลิกได้เมื่อออเดอร์ค้างเกิน 1 ชั่วโมง"${busy ? ' disabled' : ''}>ยกเลิกเมนู</button>` : ''}
                             <button class="btn btn-print" onclick="printOrder(${index})" title="เปิดหน้าต่างพิมพ์ แล้วเลือกเครื่อง Bar">${ICON_PRINT} พิมพ์ Bar</button>
                             <button class="btn btn-done" onclick="updateOrderStatus(${index}, 'Completed')"${busy ? ' disabled' : ''}>
@@ -950,6 +964,30 @@
                 await fetchOrders();
             } catch (error) {
                 console.error('Cancel Item Error:', error);
+                busyOrderKeys.delete(key);
+                renderOrders(lastOrders);
+                setConnectionError(error.message);
+            }
+        }
+
+        async function cancelLegacyOrder(orderIndex) {
+            const order = pendingOrdersForPrint[orderIndex];
+            const rowIndex = legacyCancelRow(order);
+            if (!rowIndex) return;
+            const key = orderKey(order);
+            if (busyOrderKeys.has(key)) return;
+            const details = [`ห้อง: ${order.room || 'ไม่ระบุ'}`, `รายการ: ${order.menu || 'ไม่ระบุ'}`, `เหตุผล: ${ITEM_CANCEL_REASON}`].join('\n');
+            if (!window.confirm(`ยืนยันยกเลิกทั้งออเดอร์นี้หรือไม่?\n\n${details}\n\nหมายเหตุ: ระบบไม่คืนเงินอัตโนมัติ`)) return;
+            const token = getActionToken();
+            if (!token) return;
+            busyOrderKeys.add(key);
+            renderOrders(lastOrders);
+            try {
+                await postAction({ action: 'cancelItem', rowIndex, token }, 'ยกเลิกออเดอร์ไม่สำเร็จ');
+                busyOrderKeys.delete(key);
+                await fetchOrders();
+            } catch (error) {
+                console.error('Cancel Legacy Error:', error);
                 busyOrderKeys.delete(key);
                 renderOrders(lastOrders);
                 setConnectionError(error.message);
