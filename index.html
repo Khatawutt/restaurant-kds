@@ -197,6 +197,68 @@
         .btn-cancel:hover { background: var(--late-bg); }
         .btn svg { width: 17px; height: 17px; }
 
+        /* ---------- Item cancellation ---------- */
+        .item-side { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .item-cancel {
+            height: 32px; padding: 0 10px; border-radius: 8px; cursor: pointer;
+            background: transparent; color: var(--late); border: 1px solid #E6C3B8;
+            font-size: 12px; font-weight: 600; white-space: nowrap;
+        }
+        .item-cancel:hover { background: var(--late-bg); }
+        .item-cancel:disabled { opacity: .5; cursor: wait; }
+        .menu-item-row.is-cancelled .item-name { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--late); }
+        .menu-item-row.is-cancelled .item-name .item-en, .menu-item-row.is-cancelled .item-name .item-note { text-decoration: line-through; }
+        .menu-item-row.is-cancelled .qty { background: #EFE8D6; color: var(--muted); text-decoration: line-through; }
+        .cancel-tag {
+            flex-shrink: 0; font-size: 11px; font-weight: 600; color: var(--late);
+            background: var(--late-bg); border-radius: 6px; padding: 3px 8px; white-space: nowrap;
+        }
+        .price-wrap { display: flex; flex-direction: column; gap: 4px; }
+        .price-note { font-size: 11px; color: var(--late); font-weight: 600; }
+
+        /* ---------- Sales closing modal ---------- */
+        .tool-btn.close-shift { border-color: var(--gold); color: var(--gold-text); }
+        .tool-btn.close-shift.is-closed { background: var(--ok-bg); border-color: #BCD0B6; color: var(--ok); }
+        .modal { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; }
+        .modal-backdrop { position: absolute; inset: 0; background: rgba(40, 57, 55, .42); backdrop-filter: blur(3px); }
+        .modal-panel {
+            position: relative; width: min(600px, 100%); max-height: calc(100vh - 32px); overflow: auto;
+            background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+            box-shadow: 0 30px 60px -30px rgba(40, 57, 55, .6); padding: 20px 22px;
+        }
+        .modal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+        .modal-head h2 { margin: 2px 0 0; color: var(--ink); font-size: 24px; font-weight: 600; }
+        .modal-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+        .icon-x {
+            width: 38px; height: 38px; border-radius: 50%; cursor: pointer; flex-shrink: 0;
+            background: transparent; border: 1px solid var(--line); color: var(--ink); font-size: 16px;
+        }
+        .icon-x:hover { border-color: var(--gold); }
+        .report-status { display: inline-flex; margin-top: 8px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+        .report-status.open { background: var(--warn-bg); color: #8A5E12; }
+        .report-status.closed { background: var(--ok-bg); color: var(--ok); }
+        .report-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .kpi { padding: 12px 14px; border-radius: 12px; background: #fff; border: 1px solid var(--line); }
+        .kpi .label { display: block; font-size: 12px; color: var(--muted); }
+        .kpi .num { display: block; font-size: 32px; font-weight: 700; line-height: 1.05; color: var(--ink); }
+        .kpi.total { grid-column: 1 / -1; background: var(--ink-btn); border-color: var(--ink-btn); }
+        .kpi.total .label { color: var(--pale-gold); opacity: .85; }
+        .kpi.total .num { color: var(--pale-gold); font-size: 44px; }
+        .kpi.is-warn { background: var(--warn-bg); border-color: #EBD3A6; }
+        .kpi.is-late { background: var(--late-bg); border-color: #EBC7BB; }
+        .kpi.is-late .num { color: var(--late); }
+        .report-section { margin-top: 16px; }
+        .report-section h3 { margin: 0 0 6px; font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; }
+        .report-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .report-table td { padding: 8px 0; border-bottom: 1px dashed #EAE3D2; vertical-align: top; }
+        .report-table td:last-child { text-align: right; white-space: nowrap; font-weight: 600; color: var(--ink); }
+        .report-table .muted { color: var(--muted); font-weight: 400; }
+        .notice { margin-top: 14px; padding: 10px 14px; border-radius: 10px; font-size: 13px; background: var(--warn-bg); color: #7A5310; }
+        .notice.is-block { background: var(--late-bg); color: #7A3524; }
+        .modal-foot { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+        .modal .alert { margin: 14px 0 0; }
+        .report-loading { padding: 30px 0; text-align: center; color: var(--muted); }
+
         .empty {
             grid-column: 1 / -1; text-align: center; padding: 70px 20px 60px; color: var(--muted);
         }
@@ -298,8 +360,33 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
                 <span>เต็มจอ</span>
             </button>
+            <button id="close-shift-btn" onclick="openSalesReport()" title="สรุปยอดขายวันนี้ และปิดรอบการขาย" class="tool-btn close-shift">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 21V4h14v17l-3-2-2 2-2-2-2 2-2-2z"/><path d="M9 9h6M9 13h6"/></svg>
+                <span id="close-shift-label">ปิดรอบการขาย</span>
+            </button>
         </div>
     </header>
+
+    <div id="sales-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="sales-title">
+        <div class="modal-backdrop" onclick="closeSalesModal()"></div>
+        <div class="modal-panel">
+            <div class="modal-head">
+                <div>
+                    <div class="room-label">สรุปรายงานยอดขาย</div>
+                    <h2 id="sales-title">ปิดรอบการขาย</h2>
+                    <p id="sales-date"></p>
+                </div>
+                <button class="icon-x" onclick="closeSalesModal()" aria-label="ปิดหน้าต่าง">✕</button>
+            </div>
+            <div id="sales-body"><div class="report-loading">กำลังโหลดสรุปยอด…</div></div>
+            <div id="sales-error" class="alert hidden"></div>
+            <div class="modal-foot">
+                <button class="btn btn-print" onclick="openSalesReport()">↻ รีเฟรช</button>
+                <button id="sales-print-btn" class="btn btn-print" onclick="printSalesReport()" disabled>🖨 พิมพ์รายงาน</button>
+                <button id="sales-close-btn" class="btn btn-done" onclick="confirmCloseSales()" disabled>ยืนยันปิดรอบ</button>
+            </div>
+        </div>
+    </div>
 
     <div id="connection-error" class="alert hidden"></div>
 
@@ -395,15 +482,30 @@
             return `<span class="num">${h}:${pad2(minutes % 60)}</span><small>ชม.</small>`;
         }
 
+        function isCancelledItem(item) {
+            return String(item && item.status || '').trim().toLowerCase() === 'cancelled';
+        }
+
+        // ยกเลิกรายเมนูได้เมื่อ API ส่ง rowIndex + orderId และรายการนั้นยังเป็น Pending
+        function canCancelItem(order, item) {
+            return !!(order && order.orderId && item
+                && Number.isInteger(Number(item.rowIndex)) && Number(item.rowIndex) >= 2
+                && String(item.status || '').trim().toLowerCase() === 'pending');
+        }
+
         function menuItemsForDisplay(order) {
             if (Array.isArray(order.items) && order.items.length) {
-                return order.items.map((item) => {
+                return order.items.map((item, index) => {
                     const quantity = item && item.quantity !== '' && item.quantity != null
                         ? Number(item.quantity)
                         : null;
                     return {
+                        index,
                         name: String(item && (item.name || item.menu) || '').trim(),
-                        quantity: Number.isInteger(quantity) && quantity > 0 ? quantity : null
+                        quantity: Number.isInteger(quantity) && quantity > 0 ? quantity : null,
+                        cancelled: isCancelledItem(item),
+                        cancelReason: String(item && item.cancelReason || '').trim(),
+                        cancellable: canCancelItem(order, item)
                     };
                 }).filter(item => item.name);
             }
@@ -454,21 +556,31 @@
             return Number.isFinite(n) && /^[\d,.\s]+$/.test(text) ? n.toLocaleString('en-US') : text;
         }
 
-        function renderMenuRows(order) {
+        function renderMenuRows(order, orderIndex, busy) {
             const items = menuItemsForDisplay(order);
             if (!items.length) return '<div class="empty-items">ไม่พบรายการ</div>';
             return items.map(item => {
                 const parts = splitItemName(item.name);
+                const cancelTag = item.cancelled
+                    ? `<span class="cancel-tag" title="${escapeHtml(item.cancelReason)}">ยกเลิก${item.cancelReason ? ` · ${escapeHtml(item.cancelReason)}` : ''}</span>`
+                    : '';
+                const cancelBtn = item.cancellable
+                    ? `<button class="item-cancel" onclick="cancelMenuItem(${orderIndex}, ${item.index})" title="ลูกค้าไม่เอารายการนี้แล้ว"${busy ? ' disabled' : ''}>✕ ยกเลิก</button>`
+                    : '';
                 return `
-                <div class="menu-item-row">
+                <div class="menu-item-row${item.cancelled ? ' is-cancelled' : ''}">
                     <span class="item-name">${escapeHtml(parts.main)}${parts.english ? `<span class="item-en">${escapeHtml(parts.english)}</span>` : ''}${parts.note ? `<span class="item-note">✎ ${escapeHtml(parts.note)}</span>` : ''}</span>
-                    ${item.quantity ? `<strong class="qty num${item.quantity === 1 ? ' is-one' : ''}">×${item.quantity}</strong>` : ''}
+                    <span class="item-side">
+                        ${cancelTag}${cancelBtn}
+                        ${item.quantity ? `<strong class="qty num${item.quantity === 1 ? ' is-one' : ''}">×${item.quantity}</strong>` : ''}
+                    </span>
                 </div>`;
             }).join('');
         }
 
         function printableItems(order) {
-            return menuItemsForDisplay(order).map(item => {
+            // ใบ Bar พิมพ์เฉพาะรายการที่ยังไม่ถูกยกเลิก
+            return menuItemsForDisplay(order).filter(item => !item.cancelled).map(item => {
                 const quantityLabel = item.quantity ? `<span class="ticket-quantity"> ×${item.quantity}</span>` : '';
                 return `<li>${escapeHtml(item.name)}${quantityLabel}</li>`;
             }).join('');
@@ -659,6 +771,7 @@
                 const roomIsNumeric = /^[\w\s\-()./#]{1,14}$/.test(room) && /\d/.test(room);
                 const placedLabel = wait.placed ? formatClock(wait.placed) : String(order.timestamp || order.time || '-');
                 const price = formatPrice(order.price);
+                const cancelledItemCount = Array.isArray(order.items) ? order.items.filter(isCancelledItem).length : 0;
 
                 return `
                 <article class="order-card level-${wait.level}${isNew ? ' is-new' : ''}">
@@ -678,10 +791,13 @@
                         </div>
                     </div>
 
-                    <div class="items">${renderMenuRows(order)}</div>
+                    <div class="items">${renderMenuRows(order, index, busy)}</div>
 
                     <div class="card-foot">
-                        <span class="price num"><small>฿</small>${escapeHtml(price)}</span>
+                        <span class="price-wrap">
+                            <span class="price num"><small>฿</small>${escapeHtml(price)}</span>
+                            ${cancelledItemCount ? `<span class="price-note">ยกเลิก ${cancelledItemCount} รายการ · ยอดยังไม่หักอัตโนมัติ</span>` : ''}
+                        </span>
                         <div class="btns">
                             ${canCancel ? `<button class="btn btn-cancel" onclick="cancelOrder(${index})" title="ยกเลิกได้เมื่อออเดอร์ค้างเกิน 1 ชั่วโมง"${busy ? ' disabled' : ''}>ยกเลิกเมนู</button>` : ''}
                             <button class="btn btn-print" onclick="printOrder(${index})" title="เปิดหน้าต่างพิมพ์ แล้วเลือกเครื่อง Bar">${ICON_PRINT} พิมพ์ Bar</button>
@@ -711,21 +827,7 @@
             busyOrderKeys.add(key);
             renderOrders(lastOrders);
             try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload),
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-                });
-                const text = await response.text();
-                let result;
-                try {
-                    result = JSON.parse(text);
-                } catch (error) {
-                    throw new Error('ระบบออเดอร์ไม่ได้ตอบกลับเป็น JSON');
-                }
-                if (!response.ok || result.status !== 'success') {
-                    throw new Error(result.message || 'อัปเดตสถานะออเดอร์ไม่สำเร็จ');
-                }
+                await postAction(payload, 'อัปเดตสถานะออเดอร์ไม่สำเร็จ');
                 busyOrderKeys.delete(key);
                 await fetchOrders();
             } catch (error) {
@@ -756,6 +858,329 @@
             if (!window.confirm(`ยืนยันยกเลิกเมนูทั้งออเดอร์นี้หรือไม่?\n\n${details}`)) return;
             return updateOrderStatus(index, 'Cancelled', reason);
         }
+
+        /* ---------- Shared API helpers ---------- */
+        // รหัส KDS_ACTION_TOKEN (Script Properties ใน Apps Script) — ไม่ฝังในซอร์ส
+        // ผู้จัดการกรอกครั้งแรกบนเครื่อง KDS แล้วเครื่องจะจำไว้
+        const ACTION_TOKEN_KEY = 'kds_action_token';
+        const ITEM_CANCEL_REASON = 'ลูกค้าไม่เอาแล้ว';
+
+        function getActionToken() {
+            let token = '';
+            try { token = localStorage.getItem(ACTION_TOKEN_KEY) || ''; } catch (e) {}
+            if (token) return token;
+            token = String(window.prompt('กรอกรหัสผู้จัดการ (KDS Action Token)\nเครื่องนี้จะจำรหัสไว้ใช้ครั้งต่อไป') || '').trim();
+            if (token) {
+                try { localStorage.setItem(ACTION_TOKEN_KEY, token); } catch (e) {}
+            }
+            return token;
+        }
+
+        function clearActionToken() {
+            try { localStorage.removeItem(ACTION_TOKEN_KEY); } catch (e) {}
+        }
+
+        function translateApiError(message) {
+            const text = String(message || '');
+            let m;
+            if (/KDS authorization failed/i.test(text)) return 'รหัสผู้จัดการไม่ถูกต้อง — กดใหม่อีกครั้งแล้วกรอกรหัสที่ถูกต้อง';
+            if (/KDS_ACTION_TOKEN is not configured/i.test(text)) return 'ยังไม่ได้ตั้งค่า KDS_ACTION_TOKEN ใน Script Properties ของ Apps Script';
+            if ((m = text.match(/Cannot close sales while (\d+) order/i))) return `ยังมีออเดอร์ค้าง ${m[1]} ออเดอร์ — กด "เสิร์ฟแล้ว" หรือยกเลิกให้ครบก่อนปิดรอบ`;
+            if ((m = text.match(/(\d+) completed order\(s\) have no valid price/i))) return `มี ${m[1]} ออเดอร์ที่ยังไม่มีราคา — แก้ราคาใน Sheets ก่อนปิดรอบ`;
+            if (/Only today sales can be closed/i.test(text)) return 'ปิดรอบได้เฉพาะยอดขายของวันนี้เท่านั้น';
+            if (/Only pending menu items can be cancelled/i.test(text)) return 'ยกเลิกได้เฉพาะรายการที่ยังไม่เสิร์ฟ';
+            if (/Menu item (was not found|no longer belongs)/i.test(text)) return 'ไม่พบรายการนี้แล้ว (ข้อมูลใน Sheets เปลี่ยน) — รอรีเฟรชแล้วลองใหม่';
+            if (/unknown action/i.test(text)) return 'Apps Script ยังเป็นเวอร์ชันเก่า — Deploy OrderSystem.gs เวอร์ชันใหม่ก่อน';
+            return text;
+        }
+
+        async function postAction(payload, fallbackMessage) {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify(payload),
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+            });
+            const text = await response.text();
+            let result;
+            try {
+                result = JSON.parse(text);
+            } catch (error) {
+                throw new Error('ระบบออเดอร์ไม่ได้ตอบกลับเป็น JSON');
+            }
+            if (!response.ok || result.status !== 'success') {
+                if (/KDS authorization failed/i.test(String(result.message || ''))) clearActionToken();
+                throw new Error(translateApiError(result.message) || fallbackMessage || 'ทำรายการไม่สำเร็จ');
+            }
+            return result;
+        }
+
+        /* ---------- Cancel a single menu item (ลูกค้าไม่เอาแล้ว) ---------- */
+        async function cancelMenuItem(orderIndex, itemIndex) {
+            const order = pendingOrdersForPrint[orderIndex];
+            const item = order && Array.isArray(order.items) ? order.items[itemIndex] : null;
+            if (!canCancelItem(order, item)) return;
+            const key = orderKey(order);
+            if (busyOrderKeys.has(key)) return;
+
+            const activeCount = order.items.filter(entry => !isCancelledItem(entry)).length;
+            const quantity = Number(item.quantity);
+            const details = [
+                `ห้อง: ${order.room || 'ไม่ระบุ'}`,
+                `ออเดอร์: ${order.orderId}`,
+                `รายการ: ${item.name}${Number.isInteger(quantity) && quantity > 0 ? ` ×${quantity}` : ''}`,
+                `เหตุผล: ${ITEM_CANCEL_REASON}`
+            ].join('\n');
+            const lastItemWarning = activeCount <= 1 ? '\n\n⚠️ เป็นรายการสุดท้าย — ออเดอร์นี้จะถูกยกเลิกทั้งออเดอร์' : '';
+            const message = `ยืนยันยกเลิกรายการนี้หรือไม่?\n\n${details}${lastItemWarning}\n\nหมายเหตุ: ระบบไม่หักยอด/คืนเงินอัตโนมัติ`;
+            if (!window.confirm(message)) return;
+
+            const token = getActionToken();
+            if (!token) return;
+
+            busyOrderKeys.add(key);
+            renderOrders(lastOrders);
+            try {
+                await postAction({
+                    action: 'cancelItem',
+                    orderId: String(order.orderId),
+                    rowIndex: Number(item.rowIndex),
+                    token
+                }, 'ยกเลิกรายการไม่สำเร็จ');
+                busyOrderKeys.delete(key);
+                await fetchOrders();
+            } catch (error) {
+                console.error('Cancel Item Error:', error);
+                busyOrderKeys.delete(key);
+                renderOrders(lastOrders);
+                setConnectionError(error.message);
+            }
+        }
+
+        /* ---------- Sales closing (ปิดรอบการขาย - สรุปรายงาน) ---------- */
+        let salesSummary = null;
+        let salesBusy = false;
+
+        // วันที่ตามเวลาไทย (UTC+7, ไม่มี DST) ให้ตรงกับฝั่ง Apps Script
+        function bangkokDateKey(date) {
+            return new Date(date.getTime() + 7 * 3600000).toISOString().slice(0, 10);
+        }
+
+        function formatMoney(value) {
+            const n = Number(value) || 0;
+            return n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+        }
+
+        function formatThaiDate(dateKey) {
+            const d = new Date(`${dateKey}T12:00:00+07:00`);
+            if (isNaN(d.getTime())) return dateKey;
+            try {
+                return d.toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok', day: 'numeric', month: 'long', year: 'numeric' });
+            } catch (e) {
+                return dateKey;
+            }
+        }
+
+        function formatBangkokTime(iso) {
+            const d = new Date(iso);
+            if (!iso || isNaN(d.getTime())) return '';
+            const shifted = new Date(d.getTime() + 7 * 3600000);
+            return `${pad2(shifted.getUTCHours())}:${pad2(shifted.getUTCMinutes())}`;
+        }
+
+        // รายการที่ถูกยกเลิกของวันนั้น (ใช้ข้อมูลล่าสุดจาก getOrders) — ไว้ตรวจสอบย้อนหลัง
+        function cancelledItemsForDate(dateKey) {
+            return (lastOrders || []).flatMap(order => {
+                const created = order.createdAt ? new Date(order.createdAt) : parseOrderTime(order.timestamp);
+                if (!created || isNaN(created.getTime()) || bangkokDateKey(created) !== dateKey) return [];
+                if (!Array.isArray(order.items)) return [];
+                return order.items.filter(isCancelledItem).map(item => ({
+                    room: splitRoom(order.room).room,
+                    name: splitItemName(item.name || '').main,
+                    quantity: Number(item.quantity) || null,
+                    reason: String(item.cancelReason || '').trim()
+                }));
+            });
+        }
+
+        function setSalesError(message) {
+            const el = document.getElementById('sales-error');
+            el.textContent = message ? `⚠️ ${message}` : '';
+            el.classList.toggle('hidden', !message);
+        }
+
+        function updateCloseShiftButton() {
+            const btn = document.getElementById('close-shift-btn');
+            const closed = !!(salesSummary && salesSummary.closed && salesSummary.date === bangkokDateKey(new Date()));
+            btn.classList.toggle('is-closed', closed);
+            document.getElementById('close-shift-label').innerText = closed ? 'ปิดรอบแล้ว · ดูรายงาน' : 'ปิดรอบการขาย';
+        }
+
+        function renderSalesReport() {
+            const body = document.getElementById('sales-body');
+            const closeBtn = document.getElementById('sales-close-btn');
+            const printBtn = document.getElementById('sales-print-btn');
+            const s = salesSummary;
+            if (!s) {
+                body.innerHTML = '<div class="report-loading">กำลังโหลดสรุปยอด…</div>';
+                closeBtn.disabled = true;
+                printBtn.disabled = true;
+                return;
+            }
+
+            const pending = Number(s.pendingOrderCount) || 0;
+            const missing = Number(s.ordersWithoutAmount) || 0;
+            const payments = Object.keys(s.paymentTotals || {});
+            const cancelledItems = cancelledItemsForDate(s.date);
+            const closedTime = formatBangkokTime(s.closedAt);
+
+            document.getElementById('sales-date').innerText = `ประจำวันที่ ${formatThaiDate(s.date)}`;
+
+            const blockers = [];
+            if (pending > 0) blockers.push(`ยังมีออเดอร์ค้าง ${pending} ออเดอร์ — กด "เสิร์ฟแล้ว" หรือยกเลิกให้ครบก่อนปิดรอบ`);
+            if (missing > 0) blockers.push(`มี ${missing} ออเดอร์ที่ยังไม่มีราคา — แก้ราคาใน Sheets ก่อนปิดรอบ`);
+
+            body.innerHTML = `
+                <span class="report-status ${s.closed ? 'closed' : 'open'}">${s.closed ? `✓ ปิดรอบแล้ว${closedTime ? ` เวลา ${escapeHtml(closedTime)} น.` : ''}` : '● ยังไม่ปิดรอบ (ยอดระหว่างวัน)'}</span>
+                <div class="report-grid" style="margin-top:12px">
+                    <div class="kpi total"><span class="label">ยอดขายรวม (ออเดอร์ที่เสิร์ฟแล้ว)</span><span class="num">฿${escapeHtml(formatMoney(s.totalSales))}</span></div>
+                    <div class="kpi"><span class="label">ออเดอร์สำเร็จ</span><span class="num">${Number(s.completedOrderCount) || 0}</span></div>
+                    <div class="kpi"><span class="label">ออเดอร์ยกเลิก</span><span class="num">${Number(s.cancelledOrderCount) || 0}</span></div>
+                    <div class="kpi${pending ? ' is-late' : ''}"><span class="label">ออเดอร์ค้าง</span><span class="num">${pending}</span></div>
+                    <div class="kpi${missing ? ' is-warn' : ''}"><span class="label">ไม่มีราคา</span><span class="num">${missing}</span></div>
+                </div>
+
+                <div class="report-section">
+                    <h3>แยกตามช่องทางชำระเงิน</h3>
+                    <table class="report-table">
+                        ${payments.length
+                            ? payments.map(p => `<tr><td>${escapeHtml(p)}</td><td class="num">฿${escapeHtml(formatMoney(s.paymentTotals[p]))}</td></tr>`).join('')
+                            : '<tr><td class="muted">ยังไม่มียอดขาย</td><td></td></tr>'}
+                    </table>
+                </div>
+
+                <div class="report-section">
+                    <h3>รายการที่ถูกยกเลิกวันนี้ (${cancelledItems.length})</h3>
+                    <table class="report-table">
+                        ${cancelledItems.length
+                            ? cancelledItems.map(c => `<tr><td>ห้อง ${escapeHtml(c.room)} · ${escapeHtml(c.name)}${c.quantity ? ` ×${c.quantity}` : ''}</td><td class="muted">${escapeHtml(c.reason || '-')}</td></tr>`).join('')
+                            : '<tr><td class="muted">ไม่มีรายการยกเลิก</td><td></td></tr>'}
+                    </table>
+                </div>
+
+                ${!s.closed && blockers.length ? `<div class="notice is-block">${blockers.map(escapeHtml).join('<br>')}</div>` : ''}
+                <div class="notice">ยอดขายคิดจากราคาทั้งออเดอร์ที่เสิร์ฟแล้ว — ไม่หักรายการที่ยกเลิกรายเมนูอัตโนมัติ${s.closed ? '' : ' · เมื่อปิดรอบแล้วระบบจะไม่รับออเดอร์ใหม่ของวันนี้'}</div>`;
+
+            closeBtn.disabled = salesBusy || !!s.closed || blockers.length > 0;
+            closeBtn.innerText = salesBusy ? 'กำลังปิดรอบ…' : (s.closed ? 'ปิดรอบแล้ว' : 'ยืนยันปิดรอบ');
+            printBtn.disabled = salesBusy;
+        }
+
+        async function openSalesReport() {
+            document.getElementById('sales-modal').classList.remove('hidden');
+            const today = bangkokDateKey(new Date());
+            if (!salesSummary || salesSummary.date !== today) salesSummary = null;
+            setSalesError('');
+            renderSalesReport();
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getDailySalesSummary&date=${today}`);
+                const text = await response.text();
+                let data;
+                try { data = JSON.parse(text); } catch (e) {
+                    throw new Error('Apps Script ไม่ได้ตอบกลับเป็น JSON');
+                }
+                if (data.status !== 'success' || !data.summary) {
+                    throw new Error(translateApiError(data.message) || 'โหลดสรุปยอดไม่สำเร็จ');
+                }
+                salesSummary = data.summary;
+                renderSalesReport();
+                updateCloseShiftButton();
+            } catch (error) {
+                console.error('Sales Summary Error:', error);
+                setSalesError(error.message);
+                if (!salesSummary) document.getElementById('sales-body').innerHTML = '';
+            }
+        }
+
+        function closeSalesModal() {
+            document.getElementById('sales-modal').classList.add('hidden');
+        }
+
+        async function confirmCloseSales() {
+            const s = salesSummary;
+            if (!s || s.closed || salesBusy) return;
+            const message = [
+                `ยืนยันปิดรอบการขายวันที่ ${formatThaiDate(s.date)} หรือไม่?`,
+                '',
+                `ยอดขายรวม: ฿${formatMoney(s.totalSales)}`,
+                `ออเดอร์สำเร็จ: ${Number(s.completedOrderCount) || 0}`,
+                `ออเดอร์ยกเลิก: ${Number(s.cancelledOrderCount) || 0}`,
+                '',
+                '⚠️ หลังปิดรอบ ระบบจะไม่รับออเดอร์ใหม่ของวันนี้'
+            ].join('\n');
+            if (!window.confirm(message)) return;
+
+            const token = getActionToken();
+            if (!token) return;
+
+            salesBusy = true;
+            setSalesError('');
+            renderSalesReport();
+            try {
+                const result = await postAction({ action: 'closeDailySales', date: s.date, token }, 'ปิดรอบการขายไม่สำเร็จ');
+                salesSummary = result.summary || Object.assign({}, s, { closed: true, closedAt: new Date().toISOString() });
+            } catch (error) {
+                console.error('Close Sales Error:', error);
+                setSalesError(error.message);
+            } finally {
+                salesBusy = false;
+                renderSalesReport();
+                updateCloseShiftButton();
+            }
+        }
+
+        function printSalesReport() {
+            const s = salesSummary;
+            if (!s) return;
+            const ticket = document.getElementById('print-ticket');
+            const previousTitle = document.title;
+            const closedTime = formatBangkokTime(s.closedAt);
+            const payments = Object.keys(s.paymentTotals || {});
+            const cancelledItems = cancelledItemsForDate(s.date);
+            const printedAt = formatBangkokTime(new Date().toISOString());
+
+            ticket.innerHTML = `
+                <div class="ticket-header">SALES CLOSING REPORT<br><small>สรุปยอดขายประจำวัน</small></div>
+                <div class="ticket-meta"><span>วันที่</span><strong>${escapeHtml(s.date)}</strong></div>
+                <div class="ticket-meta"><span>สถานะ</span><strong>${s.closed ? `ปิดรอบแล้ว ${escapeHtml(closedTime)}` : 'ยังไม่ปิดรอบ'}</strong></div>
+                <div class="ticket-meta"><span>พิมพ์เวลา</span><span>${escapeHtml(printedAt)}</span></div>
+                <div class="ticket-items">
+                    <div class="ticket-meta"><strong>ยอดขายรวม</strong><strong>฿${escapeHtml(formatMoney(s.totalSales))}</strong></div>
+                    <div class="ticket-meta"><span>ออเดอร์สำเร็จ</span><span>${Number(s.completedOrderCount) || 0}</span></div>
+                    <div class="ticket-meta"><span>ออเดอร์ยกเลิก</span><span>${Number(s.cancelledOrderCount) || 0}</span></div>
+                    <div class="ticket-meta"><span>ออเดอร์ค้าง</span><span>${Number(s.pendingOrderCount) || 0}</span></div>
+                    <div class="ticket-meta"><span>ไม่มีราคา</span><span>${Number(s.ordersWithoutAmount) || 0}</span></div>
+                </div>
+                <div class="ticket-items"><strong>ช่องทางชำระเงิน</strong>
+                    ${payments.length ? payments.map(p => `<div class="ticket-meta"><span>${escapeHtml(p)}</span><span>฿${escapeHtml(formatMoney(s.paymentTotals[p]))}</span></div>`).join('') : '<div class="ticket-meta"><span>-</span></div>'}
+                </div>
+                <div class="ticket-items"><strong>รายการยกเลิก (${cancelledItems.length})</strong>
+                    ${cancelledItems.length ? `<ol>${cancelledItems.map(c => `<li>ห้อง ${escapeHtml(c.room)} · ${escapeHtml(c.name)}${c.quantity ? ` ×${c.quantity}` : ''} — ${escapeHtml(c.reason || '-')}</li>`).join('')}</ol>` : '<div>ไม่มี</div>'}
+                </div>
+                <div class="ticket-note">ลงชื่อผู้ปิดรอบ ____________________</div>`;
+
+            document.title = `SALES-${s.date}`;
+            document.body.classList.add('printing-order');
+            window.addEventListener('afterprint', () => {
+                document.body.classList.remove('printing-order');
+                ticket.innerHTML = '';
+                document.title = previousTitle;
+            }, { once: true });
+            window.print();
+        }
+
+        document.addEventListener && document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') closeSalesModal();
+        });
 
         updateClock();
         setInterval(updateClock, 15000);
