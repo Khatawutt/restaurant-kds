@@ -25,6 +25,9 @@ function makeElement() {
     innerText: '',
     textContent: '',
     className: '',
+    children: [],
+    appendChild(child) { this.children.push(child); return child; },
+    addEventListener() {},
     classList: {
       add(name) { classes.add(name); },
       remove(name) { classes.delete(name); },
@@ -69,7 +72,9 @@ const document = {
   getElementById(id) {
     if (!elements.has(id)) elements.set(id, makeElement());
     return elements.get(id);
-  }
+  },
+  createElement() { return makeElement(); },
+  addEventListener() {}
 };
 const window = {
   location: { href: 'https://kds.example/' },

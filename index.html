@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -333,40 +333,40 @@
             <div class="brand-divider"></div>
             <div>
                 <h1 class="brand-title caps">Kitchen</h1>
-                <p class="brand-sub">เธซเธเนเธฒเธเธญเธเธฃเธฑเธง ยท เธญเธญเน€เธ”เธญเธฃเน In-Room Dining</p>
+                <p class="brand-sub">หน้าจอครัว · ออเดอร์ In-Room Dining</p>
             </div>
         </div>
 
         <div class="stats">
             <div class="stat">
                 <span id="order-count" class="num">0</span>
-                <span class="label">เธญเธญเน€เธ”เธญเธฃเนเธเนเธฒเธ</span>
+                <span class="label">ออเดอร์ค้าง</span>
             </div>
             <div id="late-stat" class="stat">
                 <span id="late-count" class="num">0</span>
-                <span class="label">เธฃเธญเน€เธเธดเธ 20 เธเธฒเธ—เธต</span>
+                <span class="label">รอเกิน 20 นาที</span>
             </div>
             <div class="stat clock">
                 <span id="clock" class="num">--:--</span>
-                <span id="last-update" class="label live"><span class="live-dot"></span><span id="last-update-text">เธเธณเธฅเธฑเธเน€เธเธทเนเธญเธกเธ•เนเธญโ€ฆ</span></span>
+                <span id="last-update" class="label live"><span class="live-dot"></span><span id="last-update-text">กำลังเชื่อมต่อ…</span></span>
             </div>
         </div>
 
         <div class="actions">
             <button id="audio-btn" onclick="enableAudio()" class="tool-btn attention">
-                <span id="audio-icon">๐””</span> <span id="audio-status">เน€เธเธดเธ”เน€เธชเธตเธขเธเน€เธ•เธทเธญเธ</span>
+                <span id="audio-icon">🔔</span> <span id="audio-status">เปิดเสียงเตือน</span>
             </button>
-            <button onclick="openSheet()" title="เธเธฅเธดเธเธเธงเธฒเน€เธเธทเนเธญเน€เธเธฅเธตเนเธขเธเธฅเธดเธเธเน" oncontextmenu="event.preventDefault(); setSheetUrl()" class="tool-btn">
+            <button onclick="openSheet()" title="คลิกขวาเพื่อเปลี่ยนลิงก์" oncontextmenu="event.preventDefault(); setSheetUrl()" class="tool-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 9v12"/></svg>
                 <span>Sheets</span>
             </button>
-            <button onclick="toggleFullscreen()" title="เน€เธ•เนเธกเธเธญ" class="tool-btn">
+            <button onclick="toggleFullscreen()" title="เต็มจอ" class="tool-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
-                <span>เน€เธ•เนเธกเธเธญ</span>
+                <span>เต็มจอ</span>
             </button>
-            <button id="close-shift-btn" onclick="openSalesReport()" title="เธชเธฃเธธเธเธขเธญเธ”เธเธฒเธขเธงเธฑเธเธเธตเน เนเธฅเธฐเธเธดเธ”เธฃเธญเธเธเธฒเธฃเธเธฒเธข" class="tool-btn close-shift">
+            <button id="close-shift-btn" onclick="openSalesReport()" title="สรุปยอดขายวันนี้ และปิดรอบการขาย" class="tool-btn close-shift">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 21V4h14v17l-3-2-2 2-2-2-2 2-2-2z"/><path d="M9 9h6M9 13h6"/></svg>
-                <span id="close-shift-label">เธเธดเธ”เธฃเธญเธเธเธฒเธฃเธเธฒเธข</span>
+                <span id="close-shift-label">ปิดรอบการขาย</span>
             </button>
             <button id="close-month-btn" onclick="openMonthlySalesReport()" title="สรุปยอดขายรายเดือน และปิดรอบรายเดือน" class="tool-btn close-month">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4M8 14v4M3 10h18M16 20v-4M8 6v-4"/></svg>
@@ -380,18 +380,18 @@
         <div class="modal-panel">
             <div class="modal-head">
                 <div>
-                    <div class="room-label">เธชเธฃเธธเธเธฃเธฒเธขเธเธฒเธเธขเธญเธ”เธเธฒเธข</div>
-                    <h2 id="sales-title">เธเธดเธ”เธฃเธญเธเธเธฒเธฃเธเธฒเธข</h2>
+                    <div class="room-label">สรุปรายงานยอดขาย</div>
+                    <h2 id="sales-title">ปิดรอบการขาย</h2>
                     <p id="sales-date"></p>
                 </div>
-                <button class="icon-x" onclick="closeSalesModal()" aria-label="เธเธดเธ”เธซเธเนเธฒเธ•เนเธฒเธ">โ•</button>
+                <button class="icon-x" onclick="closeSalesModal()" aria-label="ปิดหน้าต่าง">✕</button>
             </div>
-            <div id="sales-body"><div class="report-loading">เธเธณเธฅเธฑเธเนเธซเธฅเธ”เธชเธฃเธธเธเธขเธญเธ”โ€ฆ</div></div>
+            <div id="sales-body"><div class="report-loading">กำลังโหลดสรุปยอด…</div></div>
             <div id="sales-error" class="alert hidden"></div>
             <div class="modal-foot">
-                <button class="btn btn-print" onclick="openSalesReport()">โป เธฃเธตเน€เธเธฃเธ</button>
-                <button id="sales-print-btn" class="btn btn-print" onclick="printSalesReport()" disabled>๐–จ เธเธดเธกเธเนเธฃเธฒเธขเธเธฒเธ</button>
-                <button id="sales-close-btn" class="btn btn-done" onclick="confirmCloseSales()" disabled>เธขเธทเธเธขเธฑเธเธเธดเธ”เธฃเธญเธ</button>
+                <button class="btn btn-print" onclick="openSalesReport()">↻ รีเฟรช</button>
+                <button id="sales-print-btn" class="btn btn-print" onclick="printSalesReport()" disabled>🖨 พิมพ์รายงาน</button>
+                <button id="sales-close-btn" class="btn btn-done" onclick="confirmCloseSales()" disabled>ยืนยันปิดรอบ</button>
             </div>
         </div>
     </div>
@@ -400,23 +400,23 @@
         <div class="modal-panel">
             <div class="modal-head">
                 <div>
-                    <div class="room-label">เธชเธฃเธธเธเธฃเธฒเธขเธเธฒเธเธขเธญเธ”เธเธฒเธขเธฃเธฒเธขเน€เธ”เธทเธญเธ</div>
-                    <h2 id="monthly-sales-title">เธเธดเธ”เธฃเธญเธเธฃเธฒเธขเน€เธ”เธทเธญเธ</h2>
+                    <div class="room-label">สรุปรายงานยอดขายรายเดือน</div>
+                    <h2 id="monthly-sales-title">ปิดรอบรายเดือน</h2>
                     <p id="monthly-sales-date"></p>
                     <div class="month-selector" style="margin-top:8px">
-                        <label>เน€เธ”เธทเธญเธ:</label>
+                        <label>เดือน:</label>
                         <select id="monthly-month-select" onchange="onMonthlyMonthChange()"></select>
                         <select id="monthly-year-select" onchange="onMonthlyMonthChange()"></select>
                     </div>
                 </div>
-                <button class="icon-x" onclick="closeMonthlySalesModal()" aria-label="เธเธดเธ”เธซเธเนเธฒเธ•เนเธฒเธ">โ•</button>
+                <button class="icon-x" onclick="closeMonthlySalesModal()" aria-label="ปิดหน้าต่าง">✕</button>
             </div>
-            <div id="monthly-sales-body"><div class="report-loading">เธเธณเธฅเธฑเธเนเธซเธฅเธ”เธชเธฃเธธเธเธขเธญเธ”เธฃเธฒเธขเน€เธ”เธทเธญเธโ€ฆ</div></div>
+            <div id="monthly-sales-body"><div class="report-loading">กำลังโหลดสรุปยอดรายเดือน…</div></div>
             <div id="monthly-sales-error" class="alert hidden"></div>
             <div class="modal-foot">
-                <button class="btn btn-print" onclick="openMonthlySalesReport()">โป เธฃเธตเน€เธเธฃเธ</button>
-                <button id="monthly-print-btn" class="btn btn-print" onclick="printMonthlySalesReport()" disabled>๐–จ เธเธดเธกเธเนเธฃเธฒเธขเธเธฒเธเน€เธ”เธทเธญเธ</button>
-                <button id="monthly-close-btn" class="btn btn-done" onclick="confirmCloseMonthlySales()" disabled>เธขเธทเธเธขเธฑเธเธเธดเธ”เธฃเธญเธเน€เธ”เธทเธญเธ</button>
+                <button class="btn btn-print" onclick="openMonthlySalesReport()">↻ รีเฟรช</button>
+                <button id="monthly-print-btn" class="btn btn-print" onclick="printMonthlySalesReport()" disabled>🖨 พิมพ์รายงานเดือน</button>
+                <button id="monthly-close-btn" class="btn btn-done" onclick="confirmCloseMonthlySales()" disabled>ยืนยันปิดรอบเดือน</button>
             </div>
         </div>
     </div>
@@ -426,8 +426,8 @@
     <main id="orders-container">
         <div class="empty">
             <img src="assets/mana-ratchayothin-gold.png" alt="MANA Ratchayothin">
-            <h2>เธเธณเธฅเธฑเธเธฃเธญเธฃเธฑเธเธญเธญเน€เธ”เธญเธฃเนโ€ฆ</h2>
-            <p>เธฃเธฐเธเธเธเธฐเธญเธฑเธเน€เธ”เธ•เธญเธฑเธ•เนเธเธกเธฑเธ•เธดเธ—เธธเธ 5 เธงเธดเธเธฒเธ—เธต</p>
+            <h2>กำลังรอรับออเดอร์…</h2>
+            <p>ระบบจะอัปเดตอัตโนมัติทุก 5 วินาที</p>
         </div>
     </main>
 
@@ -435,11 +435,11 @@
 
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwXXEVJVTPfU4jF4Uh4ZMD-Je3wmGibKjgNpbv8CZ-JVAKJMdzHj350H1JzS8FbWzB_/exec';
-        // เธฅเธดเธเธเน Google Sheets เธ—เธตเนเน€เธเนเธเธญเธญเน€เธ”เธญเธฃเน โ€” เนเธชเนเธ•เธฃเธเธเธตเนเน€เธเธทเนเธญเนเธซเนเธ—เธธเธเน€เธเธฃเธทเนเธญเธเนเธเนเธฅเธดเธเธเนเน€เธ”เธตเธขเธงเธเธฑเธ
-        // เธ–เนเธฒเน€เธงเนเธเธงเนเธฒเธ เธเธธเนเธก "Sheets" เธเธฐเธ–เธฒเธกเธฅเธดเธเธเนเธเธฃเธฑเนเธเนเธฃเธเนเธฅเนเธงเธเธณเนเธงเนเนเธเน€เธเธฃเธทเนเธญเธเธเธฑเนเธ
+        // ลิงก์ Google Sheets ที่เก็บออเดอร์ — ใส่ตรงนี้เพื่อให้ทุกเครื่องใช้ลิงก์เดียวกัน
+        // ถ้าเว้นว่าง ปุ่ม "Sheets" จะถามลิงก์ครั้งแรกแล้วจำไว้ในเครื่องนั้น
         const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1cqtqFcxvCM_l6aZpkscfP76ndsg5RyM7Qv92-Qmb_EU/edit?gid=1306309405#gid=1306309405';
         const SHEET_URL_KEY = 'kds_sheet_url';
-        // เน€เธเธ“เธ‘เนเน€เธงเธฅเธฒเธฃเธญ (เธเธฒเธ—เธต): เน€เธซเธฅเธทเธญเธ = เน€เธฃเธดเนเธกเธเนเธฒ, เนเธ”เธ = เน€เธเธดเธเน€เธงเธฅเธฒ
+        // เกณฑ์เวลารอ (นาที): เหลือง = เริ่มช้า, แดง = เกินเวลา
         const WARN_MINUTES = 10;
         const LATE_MINUTES = 20;
         let previousOrderCount = -1;
@@ -478,7 +478,7 @@
             return String(order.orderId || order.rowIndex || `${order.room}|${order.timestamp || order.time}`);
         }
 
-        // เธฃเธญเธเธฃเธฑเธ "20/9/2026, 13:42:09" (เธฃเธนเธเนเธเธเธเธฒเธ Sheets), เธเธต เธ.เธจ. เนเธฅเธฐ ISO
+        // รองรับ "20/9/2026, 13:42:09" (รูปแบบจาก Sheets), ปี พ.ศ. และ ISO
         function parseOrderTime(value) {
             if (!value) return null;
             const text = String(value).trim();
@@ -510,23 +510,23 @@
 
         function formatWait(minutes) {
             if (minutes == null) return '';
-            if (minutes < 60) return `<span class="num">${minutes}</span><small>เธเธฒเธ—เธต</small>`;
+            if (minutes < 60) return `<span class="num">${minutes}</span><small>นาที</small>`;
             const h = Math.floor(minutes / 60);
-            return `<span class="num">${h}:${pad2(minutes % 60)}</span><small>เธเธก.</small>`;
+            return `<span class="num">${h}:${pad2(minutes % 60)}</span><small>ชม.</small>`;
         }
 
         function isCancelledItem(item) {
             return String(item && item.status || '').trim().toLowerCase() === 'cancelled';
         }
 
-        // เธขเธเน€เธฅเธดเธเธฃเธฒเธขเน€เธกเธเธนเนเธ”เนเน€เธกเธทเนเธญ API เธชเนเธ rowIndex + orderId เนเธฅเธฐเธฃเธฒเธขเธเธฒเธฃเธเธฑเนเธเธขเธฑเธเน€เธเนเธ Pending
+        // ยกเลิกรายเมนูได้เมื่อ API ส่ง rowIndex + orderId และรายการนั้นยังเป็น Pending
         function canCancelItem(order, item) {
             return !!(order && order.orderId && item
                 && Number.isInteger(Number(item.rowIndex)) && Number(item.rowIndex) >= 2
                 && String(item.status || '').trim().toLowerCase() === 'pending');
         }
 
-        // เธญเธญเน€เธ”เธญเธฃเนเน€เธเนเธฒ (เนเธกเนเธกเธต Order ID, เธ—เธฑเนเธเธญเธญเน€เธ”เธญเธฃเนเธญเธขเธนเนเนเธ–เธงเน€เธ”เธตเธขเธง) โ’ เธขเธเน€เธฅเธดเธเนเธ”เนเธ—เธฑเนเธเธญเธญเน€เธ”เธญเธฃเนเธ”เนเธงเธข rowIndex
+        // ออเดอร์เก่า (ไม่มี Order ID, ทั้งออเดอร์อยู่แถวเดียว) → ยกเลิกได้ทั้งออเดอร์ด้วย rowIndex
         function legacyCancelRow(order) {
             if (!order || order.orderId) return null;
             const rows = Array.isArray(order.items) && order.items.length
@@ -555,12 +555,12 @@
                     };
                 }).filter(item => item.name);
             }
-            // เธซเธกเธฒเธขเน€เธซเธ•เธธเนเธ [ ] เธญเธฒเธเธกเธตเธเธถเนเธเธเธฃเธฃเธ—เธฑเธ”เนเธซเธกเน โ€” เธฃเธงเธกเน€เธเนเธเธเธฃเธฃเธ—เธฑเธ”เน€เธ”เธตเธขเธงเธเนเธญเธเนเธขเธเธฃเธฒเธขเธเธฒเธฃ
+            // หมายเหตุใน [ ] อาจมีขึ้นบรรทัดใหม่ — รวมเป็นบรรทัดเดียวก่อนแยกรายการ
             const menu = String(order.menu || '').trim()
                 .replace(/\[[^\]]*\]/g, note => note.replace(/\s*\r?\n\s*/g, ' ').replace(/\s{2,}/g, ' '));
             if (!menu) return [];
 
-            // เธฃเธญเธเธฃเธฑเธเธ—เธฑเนเธ "Coffee (x1) [no sugar]" เนเธฅเธฐเธฃเธนเธเนเธเธเน€เธเนเธฒ "เธเธตเธเนเธเน x 1"
+            // รองรับทั้ง "Coffee (x1) [no sugar]" และรูปแบบเก่า "ปีกไก่ x 1"
             return menu.split(/\r?\n/).flatMap((line) => {
                 const matches = Array.from(line.matchAll(/([^,\n]+?\s+(?:\(x\d+\)|x\s?\d+)(?:\s+\[[^\]]*\])?)(?=,\s+|$)/g));
                 const entries = matches.length ? matches.map(match => match[1].trim()) : [line.trim()];
@@ -573,27 +573,27 @@
             });
         }
 
-        // เนเธขเธเธเธทเนเธญเนเธ—เธข / เธเธทเนเธญเธญเธฑเธเธเธคเธฉเนเธเธงเธเน€เธฅเนเธ / เธซเธกเธฒเธขเน€เธซเธ•เธธเนเธ [ ]
+        // แยกชื่อไทย / ชื่ออังกฤษในวงเล็บ / หมายเหตุใน [ ]
         function splitItemName(name) {
             let main = String(name);
             let note = '';
             let english = '';
             const noteMatch = main.match(/^(.*?)\s*\[([^\]]*)\]\s*$/);
             if (noteMatch) { main = noteMatch[1]; note = noteMatch[2].trim(); }
-            // เธฃเธนเธเนเธเธ "เธเธทเนเธญเนเธ—เธข-English Name" (เธเธฒเธเธซเธเนเธฒเน€เธกเธเธน)
-            const dashMatch = main.match(/^(.*?[เธ€-เนฟ)])\s*-\s*([A-Za-z][\x00-\x7F]*)$/);
+            // รูปแบบ "ชื่อไทย-English Name" (จากหน้าเมนู)
+            const dashMatch = main.match(/^(.*?[฀-๿)])\s*-\s*([A-Za-z][\x00-\x7F]*)$/);
             const enMatch = main.match(/^(.*[^\x00-\x7F].*?)\s*\(([\x00-\x7F]+)\)\s*$/);
-            if (dashMatch && /[เธ€-เนฟ]/.test(dashMatch[1])) { main = dashMatch[1]; english = dashMatch[2].trim(); }
+            if (dashMatch && /[฀-๿]/.test(dashMatch[1])) { main = dashMatch[1]; english = dashMatch[2].trim(); }
             else if (enMatch) { main = enMatch[1]; english = enMatch[2].trim(); }
             return { main: main.trim(), english, note };
         }
 
-        // "2504 (Linda Nasse)" / "#2015 (Enoo Megumi)" โ’ เน€เธฅเธเธซเนเธญเธเธ•เธฑเธงเนเธซเธเน + เธเธทเนเธญเนเธเธ
+        // "2504 (Linda Nasse)" / "#2015 (Enoo Megumi)" → เลขห้องตัวใหญ่ + ชื่อแขก
         function splitRoom(value) {
             const text = String(value || '').trim();
             const m = text.match(/^#?\s*([A-Za-z]?\d[\w\-/.]*)\s*\((.+)\)\s*$/);
             if (m) return { room: m[1], guest: m[2].trim() };
-            return { room: text || 'เนเธกเนเธฃเธฐเธเธธ', guest: '' };
+            return { room: text || 'ไม่ระบุ', guest: '' };
         }
 
         function formatPrice(value) {
@@ -604,30 +604,30 @@
 
         function renderMenuRows(order, orderIndex, busy) {
             const items = menuItemsForDisplay(order);
-            if (!items.length) return '<div class="empty-items">เนเธกเนเธเธเธฃเธฒเธขเธเธฒเธฃ</div>';
+            if (!items.length) return '<div class="empty-items">ไม่พบรายการ</div>';
             return items.map(item => {
                 const parts = splitItemName(item.name);
                 const cancelTag = item.cancelled
-                    ? `<span class="cancel-tag" title="${escapeHtml(item.cancelReason)}">เธขเธเน€เธฅเธดเธ${item.cancelReason ? ` ยท ${escapeHtml(item.cancelReason)}` : ''}</span>`
+                    ? `<span class="cancel-tag" title="${escapeHtml(item.cancelReason)}">ยกเลิก${item.cancelReason ? ` · ${escapeHtml(item.cancelReason)}` : ''}</span>`
                     : '';
                 const cancelBtn = item.cancellable
-                    ? `<button class="item-cancel" onclick="cancelMenuItem(${orderIndex}, ${item.index})" title="เธฅเธนเธเธเนเธฒเนเธกเนเน€เธญเธฒเธฃเธฒเธขเธเธฒเธฃเธเธตเนเนเธฅเนเธง"${busy ? ' disabled' : ''}>โ• เธขเธเน€เธฅเธดเธ</button>`
+                    ? `<button class="item-cancel" onclick="cancelMenuItem(${orderIndex}, ${item.index})" title="ลูกค้าไม่เอารายการนี้แล้ว"${busy ? ' disabled' : ''}>✕ ยกเลิก</button>`
                     : '';
                 return `
                 <div class="menu-item-row${item.cancelled ? ' is-cancelled' : ''}">
-                    <span class="item-name">${escapeHtml(parts.main)}${parts.english ? `<span class="item-en">${escapeHtml(parts.english)}</span>` : ''}${parts.note ? `<span class="item-note">โ ${escapeHtml(parts.note)}</span>` : ''}</span>
+                    <span class="item-name">${escapeHtml(parts.main)}${parts.english ? `<span class="item-en">${escapeHtml(parts.english)}</span>` : ''}${parts.note ? `<span class="item-note">✎ ${escapeHtml(parts.note)}</span>` : ''}</span>
                     <span class="item-side">
                         ${cancelTag}${cancelBtn}
-                        ${item.quantity ? `<strong class="qty num${item.quantity === 1 ? ' is-one' : ''}">ร—${item.quantity}</strong>` : ''}
+                        ${item.quantity ? `<strong class="qty num${item.quantity === 1 ? ' is-one' : ''}">×${item.quantity}</strong>` : ''}
                     </span>
                 </div>`;
             }).join('');
         }
 
         function printableItems(order) {
-            // เนเธ Bar เธเธดเธกเธเนเน€เธเธเธฒเธฐเธฃเธฒเธขเธเธฒเธฃเธ—เธตเนเธขเธฑเธเนเธกเนเธ–เธนเธเธขเธเน€เธฅเธดเธ
+            // ใบ Bar พิมพ์เฉพาะรายการที่ยังไม่ถูกยกเลิก
             return menuItemsForDisplay(order).filter(item => !item.cancelled).map(item => {
-                const quantityLabel = item.quantity ? `<span class="ticket-quantity"> ร—${item.quantity}</span>` : '';
+                const quantityLabel = item.quantity ? `<span class="ticket-quantity"> ×${item.quantity}</span>` : '';
                 return `<li>${escapeHtml(item.name)}${quantityLabel}</li>`;
             }).join('');
         }
@@ -637,7 +637,7 @@
             if (!order) return;
 
             const orderId = String(order.orderId || '');
-            const room = String(order.room || 'เนเธกเนเธฃเธฐเธเธธ');
+            const room = String(order.room || 'ไม่ระบุ');
             const timestamp = String(order.timestamp || order.time || '-');
             const name = String(order.name || '');
             const ticket = document.getElementById('print-ticket');
@@ -645,12 +645,12 @@
 
             ticket.innerHTML = `
                 <div class="ticket-header">BAR ORDER COPY</div>
-                <div class="ticket-meta"><span>เธซเนเธญเธ/เนเธ•เนเธฐ</span><strong>${escapeHtml(room)}</strong></div>
-                ${orderId ? `<div class="ticket-meta"><span>เธญเธญเน€เธ”เธญเธฃเน</span><strong>${escapeHtml(orderId)}</strong></div>` : ''}
-                <div class="ticket-meta"><span>เน€เธงเธฅเธฒ</span><span>${escapeHtml(timestamp)}</span></div>
-                ${name ? `<div class="ticket-meta"><span>เธเธทเนเธญ</span><span>${escapeHtml(name)}</span></div>` : ''}
-                <div class="ticket-items"><strong>เธฃเธฒเธขเธเธฒเธฃเธชเธฑเนเธเธเธทเนเธญ</strong><ol>${printableItems(order)}</ol></div>
-                <div class="ticket-note">เธชเธณเน€เธเธฒเธชเธณเธซเธฃเธฑเธ Bar</div>`;
+                <div class="ticket-meta"><span>ห้อง/โต๊ะ</span><strong>${escapeHtml(room)}</strong></div>
+                ${orderId ? `<div class="ticket-meta"><span>ออเดอร์</span><strong>${escapeHtml(orderId)}</strong></div>` : ''}
+                <div class="ticket-meta"><span>เวลา</span><span>${escapeHtml(timestamp)}</span></div>
+                ${name ? `<div class="ticket-meta"><span>ชื่อ</span><span>${escapeHtml(name)}</span></div>` : ''}
+                <div class="ticket-items"><strong>รายการสั่งซื้อ</strong><ol>${printableItems(order)}</ol></div>
+                <div class="ticket-note">สำเนาสำหรับ Bar</div>`;
 
             document.title = `BAR-${orderId || room}`;
             document.body.classList.add('printing-order');
@@ -694,8 +694,8 @@
             playChimeSound();
 
             document.getElementById('audio-btn').className = 'tool-btn is-on';
-            document.getElementById('audio-icon').innerText = '๐”';
-            document.getElementById('audio-status').innerText = 'เน€เธชเธตเธขเธเน€เธ•เธทเธญเธเน€เธเธดเธ”เธญเธขเธนเน';
+            document.getElementById('audio-icon').innerText = '🔊';
+            document.getElementById('audio-status').innerText = 'เสียงเตือนเปิดอยู่';
         }
 
         function toggleFullscreen() {
@@ -710,10 +710,10 @@
         }
 
         function setSheetUrl() {
-            const url = (prompt('เธงเธฒเธเธฅเธดเธเธเน Google Sheets เธ—เธตเนเน€เธเนเธเธญเธญเน€เธ”เธญเธฃเน:', getSheetUrl()) || '').trim();
+            const url = (prompt('วางลิงก์ Google Sheets ที่เก็บออเดอร์:', getSheetUrl()) || '').trim();
             if (!url) return '';
             if (!url.startsWith('https://docs.google.com/spreadsheets/')) {
-                alert('เธฅเธดเธเธเนเธ•เนเธญเธเธเธถเนเธเธ•เนเธเธ”เนเธงเธข https://docs.google.com/spreadsheets/');
+                alert('ลิงก์ต้องขึ้นต้นด้วย https://docs.google.com/spreadsheets/');
                 return '';
             }
             try { localStorage.setItem(SHEET_URL_KEY, url); } catch (e) {}
@@ -727,7 +727,7 @@
 
         function setConnectionError(message) {
             const el = document.getElementById('connection-error');
-            el.textContent = message ? `โ ๏ธ เน€เธเธทเนเธญเธกเธ•เนเธญเธฃเธฐเธเธเธญเธญเน€เธ”เธญเธฃเนเนเธกเนเนเธ”เน: ${message}` : '';
+            el.textContent = message ? `⚠️ เชื่อมต่อระบบออเดอร์ไม่ได้: ${message}` : '';
             el.classList.toggle('hidden', !message);
             document.getElementById('last-update').classList.toggle('is-offline', !!message);
         }
@@ -742,14 +742,14 @@
                 const text = await response.text();
                 let data;
                 try { data = JSON.parse(text); } catch (e) {
-                    throw new Error('Apps Script เนเธกเนเนเธ”เนเธ•เธญเธเธเธฅเธฑเธเน€เธเนเธ JSON (เธ•เธฃเธงเธเธชเธดเธ—เธเธดเน Deploy เธ•เนเธญเธเน€เธเนเธ Anyone)');
+                    throw new Error('Apps Script ไม่ได้ตอบกลับเป็น JSON (ตรวจสิทธิ์ Deploy ต้องเป็น Anyone)');
                 }
 
                 if (data.status === 'success') {
                     setConnectionError('');
                     renderOrders(data.orders);
                 } else {
-                    throw new Error(data.message || 'Apps Script เธ•เธญเธเธเธฅเธฑเธเธงเนเธฒเนเธกเนเธชเธณเน€เธฃเนเธ');
+                    throw new Error(data.message || 'Apps Script ตอบกลับว่าไม่สำเร็จ');
                 }
             } catch (error) {
                 console.error('Fetch Error:', error);
@@ -760,10 +760,10 @@
         function paymentBadgeHtml(order) {
             const slipUrl = safeSlipUrl(order.slip);
             const payment = String(order.payment || '');
-            if (slipUrl) return `<a href="${escapeHtml(slipUrl)}" target="_blank" rel="noopener" class="badge badge-slip">๐งพ เธ”เธนเธชเธฅเธดเธ</a>`;
-            if (/alipay/i.test(payment)) return `<span class="badge badge-room">Alipay: เธเธณเธฃเธฐเธ—เธตเนเธซเนเธญเธ</span>`;
-            if (/restaurant/i.test(payment)) return `<span class="badge badge-shop">๐’ต เธเธณเธฃเธฐเธ—เธตเนเธฃเนเธฒเธ</span>`;
-            if (order.orderId && Object.prototype.hasOwnProperty.call(order, 'slip')) return `<span class="badge badge-missing">เนเธกเนเธกเธตเธชเธฅเธดเธ</span>`;
+            if (slipUrl) return `<a href="${escapeHtml(slipUrl)}" target="_blank" rel="noopener" class="badge badge-slip">🧾 ดูสลิป</a>`;
+            if (/alipay/i.test(payment)) return `<span class="badge badge-room">Alipay: ชำระที่ห้อง</span>`;
+            if (/restaurant/i.test(payment)) return `<span class="badge badge-shop">💵 ชำระที่ร้าน</span>`;
+            if (order.orderId && Object.prototype.hasOwnProperty.call(order, 'slip')) return `<span class="badge badge-missing">ไม่มีสลิป</span>`;
             return '';
         }
 
@@ -788,7 +788,7 @@
             document.getElementById('order-count').innerText = String(pendingOrders.length);
             document.getElementById('late-count').innerText = String(lateCount);
             document.getElementById('late-stat').classList.toggle('is-late', lateCount > 0);
-            document.getElementById('last-update-text').innerText = `เธญเธฑเธเน€เธ”เธ• ${now.toLocaleTimeString('th-TH')}`;
+            document.getElementById('last-update-text').innerText = `อัปเดต ${now.toLocaleTimeString('th-TH')}`;
 
             const firstRender = seenOrderKeys === null;
             const previouslySeen = seenOrderKeys || new Set();
@@ -798,8 +798,8 @@
                 container.innerHTML = `
                     <div class="empty">
                         <img src="assets/mana-ratchayothin-gold.png" alt="MANA Ratchayothin">
-                        <h2>เนเธกเนเธกเธตเธญเธญเน€เธ”เธญเธฃเนเธเนเธฒเธ</h2>
-                        <p>เธ—เธณเธญเธฒเธซเธฒเธฃเธเธฃเธเธ—เธธเธเธญเธญเน€เธ”เธญเธฃเนเนเธฅเนเธง โ€” เธฃเธฐเธเธเธเธฐเนเธเนเธเน€เธ•เธทเธญเธเน€เธกเธทเนเธญเธกเธตเธญเธญเน€เธ”เธญเธฃเนเนเธซเธกเน</p>
+                        <h2>ไม่มีออเดอร์ค้าง</h2>
+                        <p>ทำอาหารครบทุกออเดอร์แล้ว — ระบบจะแจ้งเตือนเมื่อมีออเดอร์ใหม่</p>
                     </div>`;
                 return;
             }
@@ -823,16 +823,16 @@
                 <article class="order-card level-${wait.level}${isNew ? ' is-new' : ''}">
                     <div class="card-head">
                         <div style="min-width:0">
-                            <div class="room-label">เธซเนเธญเธ / เนเธ•เนเธฐ</div>
+                            <div class="room-label">ห้อง / โต๊ะ</div>
                             <h2 class="room ${roomIsNumeric ? 'num' : 'is-text'}">${escapeHtml(room)}</h2>
                             <div class="meta">
-                                <span>เธชเธฑเนเธเน€เธงเธฅเธฒ <b class="num">${escapeHtml(placedLabel)}</b></span>
+                                <span>สั่งเวลา <b class="num">${escapeHtml(placedLabel)}</b></span>
                                 ${order.orderId ? `<span># ${escapeHtml(order.orderId)}</span>` : ''}
-                                ${guest ? `<span>เธเธธเธ“ <b>${escapeHtml(guest)}</b></span>` : ''}
+                                ${guest ? `<span>คุณ <b>${escapeHtml(guest)}</b></span>` : ''}
                             </div>
                         </div>
                         <div class="head-right">
-                            ${wait.minutes != null ? `<span class="timer level-${wait.level}" title="เน€เธงเธฅเธฒเธฃเธญเธ•เธฑเนเธเนเธ•เนเธชเธฑเนเธ">${formatWait(wait.minutes)}</span>` : ''}
+                            ${wait.minutes != null ? `<span class="timer level-${wait.level}" title="เวลารอตั้งแต่สั่ง">${formatWait(wait.minutes)}</span>` : ''}
                             ${paymentBadgeHtml(order)}
                         </div>
                     </div>
@@ -841,15 +841,15 @@
 
                     <div class="card-foot">
                         <span class="price-wrap">
-                            <span class="price num"><small>เธฟ</small>${escapeHtml(price)}</span>
-                            ${cancelledItemCount ? `<span class="price-note">เธขเธเน€เธฅเธดเธ ${cancelledItemCount} เธฃเธฒเธขเธเธฒเธฃ ยท เธขเธญเธ”เธขเธฑเธเนเธกเนเธซเธฑเธเธญเธฑเธ•เนเธเธกเธฑเธ•เธด</span>` : ''}
+                            <span class="price num"><small>฿</small>${escapeHtml(price)}</span>
+                            ${cancelledItemCount ? `<span class="price-note">ยกเลิก ${cancelledItemCount} รายการ · ยอดยังไม่หักอัตโนมัติ</span>` : ''}
                         </span>
                         <div class="btns">
-                            ${!canCancel && legacyCancelRow(order) ? `<button class="btn btn-cancel" onclick="cancelLegacyOrder(${index})" title="เธฅเธนเธเธเนเธฒเนเธกเนเน€เธญเธฒเธญเธญเน€เธ”เธญเธฃเนเธเธตเนเนเธฅเนเธง"${busy ? ' disabled' : ''}>โ• เธขเธเน€เธฅเธดเธเธญเธญเน€เธ”เธญเธฃเน</button>` : ''}
-                            ${canCancel ? `<button class="btn btn-cancel" onclick="cancelOrder(${index})" title="เธขเธเน€เธฅเธดเธเนเธ”เนเน€เธกเธทเนเธญเธญเธญเน€เธ”เธญเธฃเนเธเนเธฒเธเน€เธเธดเธ 1 เธเธฑเนเธงเนเธกเธ"${busy ? ' disabled' : ''}>เธขเธเน€เธฅเธดเธเน€เธกเธเธน</button>` : ''}
-                            <button class="btn btn-print" onclick="printOrder(${index})" title="เน€เธเธดเธ”เธซเธเนเธฒเธ•เนเธฒเธเธเธดเธกเธเน เนเธฅเนเธงเน€เธฅเธทเธญเธเน€เธเธฃเธทเนเธญเธ Bar">${ICON_PRINT} เธเธดเธกเธเน Bar</button>
+                            ${!canCancel && legacyCancelRow(order) ? `<button class="btn btn-cancel" onclick="cancelLegacyOrder(${index})" title="ลูกค้าไม่เอาออเดอร์นี้แล้ว"${busy ? ' disabled' : ''}>✕ ยกเลิกออเดอร์</button>` : ''}
+                            ${canCancel ? `<button class="btn btn-cancel" onclick="cancelOrder(${index})" title="ยกเลิกได้เมื่อออเดอร์ค้างเกิน 1 ชั่วโมง"${busy ? ' disabled' : ''}>ยกเลิกเมนู</button>` : ''}
+                            <button class="btn btn-print" onclick="printOrder(${index})" title="เปิดหน้าต่างพิมพ์ แล้วเลือกเครื่อง Bar">${ICON_PRINT} พิมพ์ Bar</button>
                             <button class="btn btn-done" onclick="updateOrderStatus(${index}, 'Completed')"${busy ? ' disabled' : ''}>
-                                ${busy ? 'เธเธณเธฅเธฑเธเธเธฑเธเธ—เธถเธโ€ฆ' : `${ICON_CHECK} เน€เธชเธดเธฃเนเธเนเธฅเนเธง`}
+                                ${busy ? 'กำลังบันทึก…' : `${ICON_CHECK} เสิร์ฟแล้ว`}
                             </button>
                         </div>
                     </div>
@@ -874,7 +874,7 @@
             busyOrderKeys.add(key);
             renderOrders(lastOrders);
             try {
-                await postAction(payload, 'เธญเธฑเธเน€เธ”เธ•เธชเธ–เธฒเธเธฐเธญเธญเน€เธ”เธญเธฃเนเนเธกเนเธชเธณเน€เธฃเนเธ');
+                await postAction(payload, 'อัปเดตสถานะออเดอร์ไม่สำเร็จ');
                 busyOrderKeys.delete(key);
                 await fetchOrders();
             } catch (error) {
@@ -892,31 +892,31 @@
             const reasons = Array.isArray(order.cancelReasonOptions) ? order.cancelReasonOptions : [];
             const reason = String(reasons[0] || '').trim();
             if (!reason) {
-                setConnectionError('เธฃเธฐเธเธเธญเธญเน€เธ”เธญเธฃเนเนเธกเนเนเธ”เนเธฃเธฐเธเธธเน€เธซเธ•เธธเธเธฅเธ—เธตเนเนเธเนเธขเธเน€เธฅเธดเธ');
+                setConnectionError('ระบบออเดอร์ไม่ได้ระบุเหตุผลที่ใช้ยกเลิก');
                 return;
             }
 
             const details = [
-                `เธซเนเธญเธ: ${order.room || 'เนเธกเนเธฃเธฐเธเธธ'}`,
-                order.orderId ? `เธญเธญเน€เธ”เธญเธฃเน: ${order.orderId}` : '',
-                `เธฃเธฒเธขเธเธฒเธฃ: ${order.menu || 'เนเธกเนเธฃเธฐเธเธธ'}`,
-                `เน€เธซเธ•เธธเธเธฅ: ${reason}`
+                `ห้อง: ${order.room || 'ไม่ระบุ'}`,
+                order.orderId ? `ออเดอร์: ${order.orderId}` : '',
+                `รายการ: ${order.menu || 'ไม่ระบุ'}`,
+                `เหตุผล: ${reason}`
             ].filter(Boolean).join('\n');
-            if (!window.confirm(`เธขเธทเธเธขเธฑเธเธขเธเน€เธฅเธดเธเน€เธกเธเธนเธ—เธฑเนเธเธญเธญเน€เธ”เธญเธฃเนเธเธตเนเธซเธฃเธทเธญเนเธกเน?\n\n${details}`)) return;
+            if (!window.confirm(`ยืนยันยกเลิกเมนูทั้งออเดอร์นี้หรือไม่?\n\n${details}`)) return;
             return updateOrderStatus(index, 'Cancelled', reason);
         }
 
         /* ---------- Shared API helpers ---------- */
-        // เธฃเธซเธฑเธช KDS_ACTION_TOKEN (Script Properties เนเธ Apps Script) โ€” เนเธกเนเธเธฑเธเนเธเธเธญเธฃเนเธช
-        // เธเธนเนเธเธฑเธ”เธเธฒเธฃเธเธฃเธญเธเธเธฃเธฑเนเธเนเธฃเธเธเธเน€เธเธฃเธทเนเธญเธ KDS เนเธฅเนเธงเน€เธเธฃเธทเนเธญเธเธเธฐเธเธณเนเธงเน
+        // รหัส KDS_ACTION_TOKEN (Script Properties ใน Apps Script) — ไม่ฝังในซอร์ส
+        // ผู้จัดการกรอกครั้งแรกบนเครื่อง KDS แล้วเครื่องจะจำไว้
         const ACTION_TOKEN_KEY = 'kds_action_token';
-        const ITEM_CANCEL_REASON = 'เธฅเธนเธเธเนเธฒเนเธกเนเน€เธญเธฒเนเธฅเนเธง';
+        const ITEM_CANCEL_REASON = 'ลูกค้าไม่เอาแล้ว';
 
         function getActionToken() {
             let token = '';
             try { token = localStorage.getItem(ACTION_TOKEN_KEY) || ''; } catch (e) {}
             if (token) return token;
-            token = String(window.prompt('เธเธฃเธญเธเธฃเธซเธฑเธชเธเธนเนเธเธฑเธ”เธเธฒเธฃ (KDS Action Token)\nเน€เธเธฃเธทเนเธญเธเธเธตเนเธเธฐเธเธณเธฃเธซเธฑเธชเนเธงเนเนเธเนเธเธฃเธฑเนเธเธ•เนเธญเนเธ') || '').trim();
+            token = String(window.prompt('กรอกรหัสผู้จัดการ (KDS Action Token)\nเครื่องนี้จะจำรหัสไว้ใช้ครั้งต่อไป') || '').trim();
             if (token) {
                 try { localStorage.setItem(ACTION_TOKEN_KEY, token); } catch (e) {}
             }
@@ -930,14 +930,14 @@
         function translateApiError(message) {
             const text = String(message || '');
             let m;
-            if (/KDS authorization failed/i.test(text)) return 'เธฃเธซเธฑเธชเธเธนเนเธเธฑเธ”เธเธฒเธฃเนเธกเนเธ–เธนเธเธ•เนเธญเธ โ€” เธเธ”เนเธซเธกเนเธญเธตเธเธเธฃเธฑเนเธเนเธฅเนเธงเธเธฃเธญเธเธฃเธซเธฑเธชเธ—เธตเนเธ–เธนเธเธ•เนเธญเธ';
-            if (/KDS_ACTION_TOKEN is not configured/i.test(text)) return 'เธขเธฑเธเนเธกเนเนเธ”เนเธ•เธฑเนเธเธเนเธฒ KDS_ACTION_TOKEN เนเธ Script Properties เธเธญเธ Apps Script';
-            if ((m = text.match(/Cannot close sales while (\d+) order/i))) return `เธขเธฑเธเธกเธตเธญเธญเน€เธ”เธญเธฃเนเธเนเธฒเธ ${m[1]} เธญเธญเน€เธ”เธญเธฃเน โ€” เธเธ” "เน€เธชเธดเธฃเนเธเนเธฅเนเธง" เธซเธฃเธทเธญเธขเธเน€เธฅเธดเธเนเธซเนเธเธฃเธเธเนเธญเธเธเธดเธ”เธฃเธญเธ`;
-            if ((m = text.match(/(\d+) completed order\(s\) have no valid price/i))) return `เธกเธต ${m[1]} เธญเธญเน€เธ”เธญเธฃเนเธ—เธตเนเธขเธฑเธเนเธกเนเธกเธตเธฃเธฒเธเธฒ โ€” เนเธเนเธฃเธฒเธเธฒเนเธ Sheets เธเนเธญเธเธเธดเธ”เธฃเธญเธ`;
-            if (/Only today sales can be closed/i.test(text)) return 'เธเธดเธ”เธฃเธญเธเนเธ”เนเน€เธเธเธฒเธฐเธขเธญเธ”เธเธฒเธขเธเธญเธเธงเธฑเธเธเธตเนเน€เธ—เนเธฒเธเธฑเนเธ';
-            if (/Only pending menu items can be cancelled/i.test(text)) return 'เธขเธเน€เธฅเธดเธเนเธ”เนเน€เธเธเธฒเธฐเธฃเธฒเธขเธเธฒเธฃเธ—เธตเนเธขเธฑเธเนเธกเนเน€เธชเธดเธฃเนเธ';
-            if (/Menu item (was not found|no longer belongs)/i.test(text)) return 'เนเธกเนเธเธเธฃเธฒเธขเธเธฒเธฃเธเธตเนเนเธฅเนเธง (เธเนเธญเธกเธนเธฅเนเธ Sheets เน€เธเธฅเธตเนเธขเธ) โ€” เธฃเธญเธฃเธตเน€เธเธฃเธเนเธฅเนเธงเธฅเธญเธเนเธซเธกเน';
-            if (/unknown action/i.test(text)) return 'Apps Script เธขเธฑเธเน€เธเนเธเน€เธงเธญเธฃเนเธเธฑเธเน€เธเนเธฒ โ€” Deploy OrderSystem.gs เน€เธงเธญเธฃเนเธเธฑเธเนเธซเธกเนเธเนเธญเธ';
+            if (/KDS authorization failed/i.test(text)) return 'รหัสผู้จัดการไม่ถูกต้อง — กดใหม่อีกครั้งแล้วกรอกรหัสที่ถูกต้อง';
+            if (/KDS_ACTION_TOKEN is not configured/i.test(text)) return 'ยังไม่ได้ตั้งค่า KDS_ACTION_TOKEN ใน Script Properties ของ Apps Script';
+            if ((m = text.match(/Cannot close sales while (\d+) order/i))) return `ยังมีออเดอร์ค้าง ${m[1]} ออเดอร์ — กด "เสิร์ฟแล้ว" หรือยกเลิกให้ครบก่อนปิดรอบ`;
+            if ((m = text.match(/(\d+) completed order\(s\) have no valid price/i))) return `มี ${m[1]} ออเดอร์ที่ยังไม่มีราคา — แก้ราคาใน Sheets ก่อนปิดรอบ`;
+            if (/Only today sales can be closed/i.test(text)) return 'ปิดรอบได้เฉพาะยอดขายของวันนี้เท่านั้น';
+            if (/Only pending menu items can be cancelled/i.test(text)) return 'ยกเลิกได้เฉพาะรายการที่ยังไม่เสิร์ฟ';
+            if (/Menu item (was not found|no longer belongs)/i.test(text)) return 'ไม่พบรายการนี้แล้ว (ข้อมูลใน Sheets เปลี่ยน) — รอรีเฟรชแล้วลองใหม่';
+            if (/unknown action/i.test(text)) return 'Apps Script ยังเป็นเวอร์ชันเก่า — Deploy OrderSystem.gs เวอร์ชันใหม่ก่อน';
             return text;
         }
 
@@ -952,16 +952,16 @@
             try {
                 result = JSON.parse(text);
             } catch (error) {
-                throw new Error('เธฃเธฐเธเธเธญเธญเน€เธ”เธญเธฃเนเนเธกเนเนเธ”เนเธ•เธญเธเธเธฅเธฑเธเน€เธเนเธ JSON');
+                throw new Error('ระบบออเดอร์ไม่ได้ตอบกลับเป็น JSON');
             }
             if (!response.ok || result.status !== 'success') {
                 if (/KDS authorization failed/i.test(String(result.message || ''))) clearActionToken();
-                throw new Error(translateApiError(result.message) || fallbackMessage || 'เธ—เธณเธฃเธฒเธขเธเธฒเธฃเนเธกเนเธชเธณเน€เธฃเนเธ');
+                throw new Error(translateApiError(result.message) || fallbackMessage || 'ทำรายการไม่สำเร็จ');
             }
             return result;
         }
 
-        /* ---------- Cancel a single menu item (เธฅเธนเธเธเนเธฒเนเธกเนเน€เธญเธฒเนเธฅเนเธง) ---------- */
+        /* ---------- Cancel a single menu item (ลูกค้าไม่เอาแล้ว) ---------- */
         async function cancelMenuItem(orderIndex, itemIndex) {
             const order = pendingOrdersForPrint[orderIndex];
             const item = order && Array.isArray(order.items) ? order.items[itemIndex] : null;
@@ -972,13 +972,13 @@
             const activeCount = order.items.filter(entry => !isCancelledItem(entry)).length;
             const quantity = Number(item.quantity);
             const details = [
-                `เธซเนเธญเธ: ${order.room || 'เนเธกเนเธฃเธฐเธเธธ'}`,
-                `เธญเธญเน€เธ”เธญเธฃเน: ${order.orderId}`,
-                `เธฃเธฒเธขเธเธฒเธฃ: ${item.name}${Number.isInteger(quantity) && quantity > 0 ? ` ร—${quantity}` : ''}`,
-                `เน€เธซเธ•เธธเธเธฅ: ${ITEM_CANCEL_REASON}`
+                `ห้อง: ${order.room || 'ไม่ระบุ'}`,
+                `ออเดอร์: ${order.orderId}`,
+                `รายการ: ${item.name}${Number.isInteger(quantity) && quantity > 0 ? ` ×${quantity}` : ''}`,
+                `เหตุผล: ${ITEM_CANCEL_REASON}`
             ].join('\n');
-            const lastItemWarning = activeCount <= 1 ? '\n\nโ ๏ธ เน€เธเนเธเธฃเธฒเธขเธเธฒเธฃเธชเธธเธ”เธ—เนเธฒเธข โ€” เธญเธญเน€เธ”เธญเธฃเนเธเธตเนเธเธฐเธ–เธนเธเธขเธเน€เธฅเธดเธเธ—เธฑเนเธเธญเธญเน€เธ”เธญเธฃเน' : '';
-            const message = `เธขเธทเธเธขเธฑเธเธขเธเน€เธฅเธดเธเธฃเธฒเธขเธเธฒเธฃเธเธตเนเธซเธฃเธทเธญเนเธกเน?\n\n${details}${lastItemWarning}\n\nเธซเธกเธฒเธขเน€เธซเธ•เธธ: เธฃเธฐเธเธเนเธกเนเธซเธฑเธเธขเธญเธ”/เธเธทเธเน€เธเธดเธเธญเธฑเธ•เนเธเธกเธฑเธ•เธด`;
+            const lastItemWarning = activeCount <= 1 ? '\n\n⚠️ เป็นรายการสุดท้าย — ออเดอร์นี้จะถูกยกเลิกทั้งออเดอร์' : '';
+            const message = `ยืนยันยกเลิกรายการนี้หรือไม่?\n\n${details}${lastItemWarning}\n\nหมายเหตุ: ระบบไม่หักยอด/คืนเงินอัตโนมัติ`;
             if (!window.confirm(message)) return;
 
             const token = getActionToken();
@@ -992,7 +992,7 @@
                     orderId: String(order.orderId),
                     rowIndex: Number(item.rowIndex),
                     token
-                }, 'เธขเธเน€เธฅเธดเธเธฃเธฒเธขเธเธฒเธฃเนเธกเนเธชเธณเน€เธฃเนเธ');
+                }, 'ยกเลิกรายการไม่สำเร็จ');
                 busyOrderKeys.delete(key);
                 await fetchOrders();
             } catch (error) {
@@ -1009,14 +1009,14 @@
             if (!rowIndex) return;
             const key = orderKey(order);
             if (busyOrderKeys.has(key)) return;
-            const details = [`เธซเนเธญเธ: ${order.room || 'เนเธกเนเธฃเธฐเธเธธ'}`, `เธฃเธฒเธขเธเธฒเธฃ: ${order.menu || 'เนเธกเนเธฃเธฐเธเธธ'}`, `เน€เธซเธ•เธธเธเธฅ: ${ITEM_CANCEL_REASON}`].join('\n');
-            if (!window.confirm(`เธขเธทเธเธขเธฑเธเธขเธเน€เธฅเธดเธเธ—เธฑเนเธเธญเธญเน€เธ”เธญเธฃเนเธเธตเนเธซเธฃเธทเธญเนเธกเน?\n\n${details}\n\nเธซเธกเธฒเธขเน€เธซเธ•เธธ: เธฃเธฐเธเธเนเธกเนเธเธทเธเน€เธเธดเธเธญเธฑเธ•เนเธเธกเธฑเธ•เธด`)) return;
+            const details = [`ห้อง: ${order.room || 'ไม่ระบุ'}`, `รายการ: ${order.menu || 'ไม่ระบุ'}`, `เหตุผล: ${ITEM_CANCEL_REASON}`].join('\n');
+            if (!window.confirm(`ยืนยันยกเลิกทั้งออเดอร์นี้หรือไม่?\n\n${details}\n\nหมายเหตุ: ระบบไม่คืนเงินอัตโนมัติ`)) return;
             const token = getActionToken();
             if (!token) return;
             busyOrderKeys.add(key);
             renderOrders(lastOrders);
             try {
-                await postAction({ action: 'cancelItem', rowIndex, token }, 'เธขเธเน€เธฅเธดเธเธญเธญเน€เธ”เธญเธฃเนเนเธกเนเธชเธณเน€เธฃเนเธ');
+                await postAction({ action: 'cancelItem', rowIndex, token }, 'ยกเลิกออเดอร์ไม่สำเร็จ');
                 busyOrderKeys.delete(key);
                 await fetchOrders();
             } catch (error) {
@@ -1027,11 +1027,11 @@
             }
         }
 
-        /* ---------- Sales closing (เธเธดเธ”เธฃเธญเธเธเธฒเธฃเธเธฒเธข - เธชเธฃเธธเธเธฃเธฒเธขเธเธฒเธ) ---------- */
+        /* ---------- Sales closing (ปิดรอบการขาย - สรุปรายงาน) ---------- */
         let salesSummary = null;
         let salesBusy = false;
 
-        // เธงเธฑเธเธ—เธตเนเธ•เธฒเธกเน€เธงเธฅเธฒเนเธ—เธข (UTC+7, เนเธกเนเธกเธต DST) เนเธซเนเธ•เธฃเธเธเธฑเธเธเธฑเนเธ Apps Script
+        // วันที่ตามเวลาไทย (UTC+7, ไม่มี DST) ให้ตรงกับฝั่ง Apps Script
         function bangkokDateKey(date) {
             return new Date(date.getTime() + 7 * 3600000).toISOString().slice(0, 10);
         }
@@ -1058,7 +1058,7 @@
             return `${pad2(shifted.getUTCHours())}:${pad2(shifted.getUTCMinutes())}`;
         }
 
-        // เธฃเธฒเธขเธเธฒเธฃเธ—เธตเนเธ–เธนเธเธขเธเน€เธฅเธดเธเธเธญเธเธงเธฑเธเธเธฑเนเธ (เนเธเนเธเนเธญเธกเธนเธฅเธฅเนเธฒเธชเธธเธ”เธเธฒเธ getOrders) โ€” เนเธงเนเธ•เธฃเธงเธเธชเธญเธเธขเนเธญเธเธซเธฅเธฑเธ
+        // รายการที่ถูกยกเลิกของวันนั้น (ใช้ข้อมูลล่าสุดจาก getOrders) — ไว้ตรวจสอบย้อนหลัง
         function cancelledItemsForDate(dateKey) {
             return (lastOrders || []).flatMap(order => {
                 const created = order.createdAt ? new Date(order.createdAt) : parseOrderTime(order.timestamp);
@@ -1075,7 +1075,7 @@
 
         function setSalesError(message) {
             const el = document.getElementById('sales-error');
-            el.textContent = message ? `โ ๏ธ ${message}` : '';
+            el.textContent = message ? `⚠️ ${message}` : '';
             el.classList.toggle('hidden', !message);
         }
 
@@ -1083,7 +1083,7 @@
             const btn = document.getElementById('close-shift-btn');
             const closed = !!(salesSummary && salesSummary.closed && salesSummary.date === bangkokDateKey(new Date()));
             btn.classList.toggle('is-closed', closed);
-            document.getElementById('close-shift-label').innerText = closed ? 'เธเธดเธ”เธฃเธญเธเนเธฅเนเธง ยท เธ”เธนเธฃเธฒเธขเธเธฒเธ' : 'เธเธดเธ”เธฃเธญเธเธเธฒเธฃเธเธฒเธข';
+            document.getElementById('close-shift-label').innerText = closed ? 'ปิดรอบแล้ว · ดูรายงาน' : 'ปิดรอบการขาย';
         }
 
         function renderSalesReport() {
@@ -1092,7 +1092,7 @@
             const printBtn = document.getElementById('sales-print-btn');
             const s = salesSummary;
             if (!s) {
-                body.innerHTML = '<div class="report-loading">เธเธณเธฅเธฑเธเนเธซเธฅเธ”เธชเธฃเธธเธเธขเธญเธ”โ€ฆ</div>';
+                body.innerHTML = '<div class="report-loading">กำลังโหลดสรุปยอด…</div>';
                 closeBtn.disabled = true;
                 printBtn.disabled = true;
                 return;
@@ -1104,45 +1104,45 @@
             const cancelledItems = cancelledItemsForDate(s.date);
             const closedTime = formatBangkokTime(s.closedAt);
 
-            document.getElementById('sales-date').innerText = `เธเธฃเธฐเธเธณเธงเธฑเธเธ—เธตเน ${formatThaiDate(s.date)}`;
+            document.getElementById('sales-date').innerText = `ประจำวันที่ ${formatThaiDate(s.date)}`;
 
             const blockers = [];
-            if (pending > 0) blockers.push(`เธขเธฑเธเธกเธตเธญเธญเน€เธ”เธญเธฃเนเธเนเธฒเธ ${pending} เธญเธญเน€เธ”เธญเธฃเน โ€” เธเธ” "เน€เธชเธดเธฃเนเธเนเธฅเนเธง" เธซเธฃเธทเธญเธขเธเน€เธฅเธดเธเนเธซเนเธเธฃเธเธเนเธญเธเธเธดเธ”เธฃเธญเธ`);
-            if (missing > 0) blockers.push(`เธกเธต ${missing} เธญเธญเน€เธ”เธญเธฃเนเธ—เธตเนเธขเธฑเธเนเธกเนเธกเธตเธฃเธฒเธเธฒ โ€” เนเธเนเธฃเธฒเธเธฒเนเธ Sheets เธเนเธญเธเธเธดเธ”เธฃเธญเธ`);
+            if (pending > 0) blockers.push(`ยังมีออเดอร์ค้าง ${pending} ออเดอร์ — กด "เสิร์ฟแล้ว" หรือยกเลิกให้ครบก่อนปิดรอบ`);
+            if (missing > 0) blockers.push(`มี ${missing} ออเดอร์ที่ยังไม่มีราคา — แก้ราคาใน Sheets ก่อนปิดรอบ`);
 
             body.innerHTML = `
-                <span class="report-status ${s.closed ? 'closed' : 'open'}">${s.closed ? `โ“ เธเธดเธ”เธฃเธญเธเนเธฅเนเธง${closedTime ? ` เน€เธงเธฅเธฒ ${escapeHtml(closedTime)} เธ.` : ''}` : 'โ— เธขเธฑเธเนเธกเนเธเธดเธ”เธฃเธญเธ (เธขเธญเธ”เธฃเธฐเธซเธงเนเธฒเธเธงเธฑเธ)'}</span>
+                <span class="report-status ${s.closed ? 'closed' : 'open'}">${s.closed ? `✓ ปิดรอบแล้ว${closedTime ? ` เวลา ${escapeHtml(closedTime)} น.` : ''}` : '● ยังไม่ปิดรอบ (ยอดระหว่างวัน)'}</span>
                 <div class="report-grid" style="margin-top:12px">
-                    <div class="kpi total"><span class="label">เธขเธญเธ”เธเธฒเธขเธฃเธงเธก (เธญเธญเน€เธ”เธญเธฃเนเธ—เธตเนเน€เธชเธดเธฃเนเธเนเธฅเนเธง)</span><span class="num">เธฟ${escapeHtml(formatMoney(s.totalSales))}</span></div>
-                    <div class="kpi"><span class="label">เธญเธญเน€เธ”เธญเธฃเนเธชเธณเน€เธฃเนเธ</span><span class="num">${Number(s.completedOrderCount) || 0}</span></div>
-                    <div class="kpi"><span class="label">เธญเธญเน€เธ”เธญเธฃเนเธขเธเน€เธฅเธดเธ</span><span class="num">${Number(s.cancelledOrderCount) || 0}</span></div>
-                    <div class="kpi${pending ? ' is-late' : ''}"><span class="label">เธญเธญเน€เธ”เธญเธฃเนเธเนเธฒเธ</span><span class="num">${pending}</span></div>
-                    <div class="kpi${missing ? ' is-warn' : ''}"><span class="label">เนเธกเนเธกเธตเธฃเธฒเธเธฒ</span><span class="num">${missing}</span></div>
+                    <div class="kpi total"><span class="label">ยอดขายรวม (ออเดอร์ที่เสิร์ฟแล้ว)</span><span class="num">฿${escapeHtml(formatMoney(s.totalSales))}</span></div>
+                    <div class="kpi"><span class="label">ออเดอร์สำเร็จ</span><span class="num">${Number(s.completedOrderCount) || 0}</span></div>
+                    <div class="kpi"><span class="label">ออเดอร์ยกเลิก</span><span class="num">${Number(s.cancelledOrderCount) || 0}</span></div>
+                    <div class="kpi${pending ? ' is-late' : ''}"><span class="label">ออเดอร์ค้าง</span><span class="num">${pending}</span></div>
+                    <div class="kpi${missing ? ' is-warn' : ''}"><span class="label">ไม่มีราคา</span><span class="num">${missing}</span></div>
                 </div>
 
                 <div class="report-section">
-                    <h3>เนเธขเธเธ•เธฒเธกเธเนเธญเธเธ—เธฒเธเธเธณเธฃเธฐเน€เธเธดเธ</h3>
+                    <h3>แยกตามช่องทางชำระเงิน</h3>
                     <table class="report-table">
                         ${payments.length
-                            ? payments.map(p => `<tr><td>${escapeHtml(p)}</td><td class="num">เธฟ${escapeHtml(formatMoney(s.paymentTotals[p]))}</td></tr>`).join('')
-                            : '<tr><td class="muted">เธขเธฑเธเนเธกเนเธกเธตเธขเธญเธ”เธเธฒเธข</td><td></td></tr>'}
+                            ? payments.map(p => `<tr><td>${escapeHtml(p)}</td><td class="num">฿${escapeHtml(formatMoney(s.paymentTotals[p]))}</td></tr>`).join('')
+                            : '<tr><td class="muted">ยังไม่มียอดขาย</td><td></td></tr>'}
                     </table>
                 </div>
 
                 <div class="report-section">
-                    <h3>เธฃเธฒเธขเธเธฒเธฃเธ—เธตเนเธ–เธนเธเธขเธเน€เธฅเธดเธเธงเธฑเธเธเธตเน (${cancelledItems.length})</h3>
+                    <h3>รายการที่ถูกยกเลิกวันนี้ (${cancelledItems.length})</h3>
                     <table class="report-table">
                         ${cancelledItems.length
-                            ? cancelledItems.map(c => `<tr><td>เธซเนเธญเธ ${escapeHtml(c.room)} ยท ${escapeHtml(c.name)}${c.quantity ? ` ร—${c.quantity}` : ''}</td><td class="muted">${escapeHtml(c.reason || '-')}</td></tr>`).join('')
-                            : '<tr><td class="muted">เนเธกเนเธกเธตเธฃเธฒเธขเธเธฒเธฃเธขเธเน€เธฅเธดเธ</td><td></td></tr>'}
+                            ? cancelledItems.map(c => `<tr><td>ห้อง ${escapeHtml(c.room)} · ${escapeHtml(c.name)}${c.quantity ? ` ×${c.quantity}` : ''}</td><td class="muted">${escapeHtml(c.reason || '-')}</td></tr>`).join('')
+                            : '<tr><td class="muted">ไม่มีรายการยกเลิก</td><td></td></tr>'}
                     </table>
                 </div>
 
                 ${!s.closed && blockers.length ? `<div class="notice is-block">${blockers.map(escapeHtml).join('<br>')}</div>` : ''}
-                <div class="notice">เธขเธญเธ”เธเธฒเธขเธเธดเธ”เธเธฒเธเธฃเธฒเธเธฒเธ—เธฑเนเธเธญเธญเน€เธ”เธญเธฃเนเธ—เธตเนเน€เธชเธดเธฃเนเธเนเธฅเนเธง โ€” เนเธกเนเธซเธฑเธเธฃเธฒเธขเธเธฒเธฃเธ—เธตเนเธขเธเน€เธฅเธดเธเธฃเธฒเธขเน€เธกเธเธนเธญเธฑเธ•เนเธเธกเธฑเธ•เธด${s.closed ? '' : ' ยท เน€เธกเธทเนเธญเธเธดเธ”เธฃเธญเธเนเธฅเนเธงเธฃเธฐเธเธเธเธฐเนเธกเนเธฃเธฑเธเธญเธญเน€เธ”เธญเธฃเนเนเธซเธกเนเธเธญเธเธงเธฑเธเธเธตเน'}</div>`;
+                <div class="notice">ยอดขายคิดจากราคาทั้งออเดอร์ที่เสิร์ฟแล้ว — ไม่หักรายการที่ยกเลิกรายเมนูอัตโนมัติ${s.closed ? '' : ' · เมื่อปิดรอบแล้วระบบจะไม่รับออเดอร์ใหม่ของวันนี้'}</div>`;
 
             closeBtn.disabled = salesBusy || !!s.closed || blockers.length > 0;
-            closeBtn.innerText = salesBusy ? 'เธเธณเธฅเธฑเธเธเธดเธ”เธฃเธญเธโ€ฆ' : (s.closed ? 'เธเธดเธ”เธฃเธญเธเนเธฅเนเธง' : 'เธขเธทเธเธขเธฑเธเธเธดเธ”เธฃเธญเธ');
+            closeBtn.innerText = salesBusy ? 'กำลังปิดรอบ…' : (s.closed ? 'ปิดรอบแล้ว' : 'ยืนยันปิดรอบ');
             printBtn.disabled = salesBusy;
         }
 
@@ -1157,10 +1157,10 @@
                 const text = await response.text();
                 let data;
                 try { data = JSON.parse(text); } catch (e) {
-                    throw new Error('Apps Script เนเธกเนเนเธ”เนเธ•เธญเธเธเธฅเธฑเธเน€เธเนเธ JSON');
+                    throw new Error('Apps Script ไม่ได้ตอบกลับเป็น JSON');
                 }
                 if (data.status !== 'success' || !data.summary) {
-                    throw new Error(translateApiError(data.message) || 'เนเธซเธฅเธ”เธชเธฃเธธเธเธขเธญเธ”เนเธกเนเธชเธณเน€เธฃเนเธ');
+                    throw new Error(translateApiError(data.message) || 'โหลดสรุปยอดไม่สำเร็จ');
                 }
                 salesSummary = data.summary;
                 renderSalesReport();
@@ -1180,13 +1180,13 @@
             const s = salesSummary;
             if (!s || s.closed || salesBusy) return;
             const message = [
-                `เธขเธทเธเธขเธฑเธเธเธดเธ”เธฃเธญเธเธเธฒเธฃเธเธฒเธขเธงเธฑเธเธ—เธตเน ${formatThaiDate(s.date)} เธซเธฃเธทเธญเนเธกเน?`,
+                `ยืนยันปิดรอบการขายวันที่ ${formatThaiDate(s.date)} หรือไม่?`,
                 '',
-                `เธขเธญเธ”เธเธฒเธขเธฃเธงเธก: เธฟ${formatMoney(s.totalSales)}`,
-                `เธญเธญเน€เธ”เธญเธฃเนเธชเธณเน€เธฃเนเธ: ${Number(s.completedOrderCount) || 0}`,
-                `เธญเธญเน€เธ”เธญเธฃเนเธขเธเน€เธฅเธดเธ: ${Number(s.cancelledOrderCount) || 0}`,
+                `ยอดขายรวม: ฿${formatMoney(s.totalSales)}`,
+                `ออเดอร์สำเร็จ: ${Number(s.completedOrderCount) || 0}`,
+                `ออเดอร์ยกเลิก: ${Number(s.cancelledOrderCount) || 0}`,
                 '',
-                'โ ๏ธ เธซเธฅเธฑเธเธเธดเธ”เธฃเธญเธ เธฃเธฐเธเธเธเธฐเนเธกเนเธฃเธฑเธเธญเธญเน€เธ”เธญเธฃเนเนเธซเธกเนเธเธญเธเธงเธฑเธเธเธตเน'
+                '⚠️ หลังปิดรอบ ระบบจะไม่รับออเดอร์ใหม่ของวันนี้'
             ].join('\n');
             if (!window.confirm(message)) return;
 
@@ -1197,7 +1197,7 @@
             setSalesError('');
             renderSalesReport();
             try {
-                const result = await postAction({ action: 'closeDailySales', date: s.date, token }, 'เธเธดเธ”เธฃเธญเธเธเธฒเธฃเธเธฒเธขเนเธกเนเธชเธณเน€เธฃเนเธ');
+                const result = await postAction({ action: 'closeDailySales', date: s.date, token }, 'ปิดรอบการขายไม่สำเร็จ');
                 salesSummary = result.summary || Object.assign({}, s, { closed: true, closedAt: new Date().toISOString() });
             } catch (error) {
                 console.error('Close Sales Error:', error);
@@ -1220,24 +1220,24 @@
             const printedAt = formatBangkokTime(new Date().toISOString());
 
             ticket.innerHTML = `
-                <div class="ticket-header">SALES CLOSING REPORT<br><small>เธชเธฃเธธเธเธขเธญเธ”เธเธฒเธขเธเธฃเธฐเธเธณเธงเธฑเธ</small></div>
-                <div class="ticket-meta"><span>เธงเธฑเธเธ—เธตเน</span><strong>${escapeHtml(s.date)}</strong></div>
-                <div class="ticket-meta"><span>เธชเธ–เธฒเธเธฐ</span><strong>${s.closed ? `เธเธดเธ”เธฃเธญเธเนเธฅเนเธง ${escapeHtml(closedTime)}` : 'เธขเธฑเธเนเธกเนเธเธดเธ”เธฃเธญเธ'}</strong></div>
-                <div class="ticket-meta"><span>เธเธดเธกเธเนเน€เธงเธฅเธฒ</span><span>${escapeHtml(printedAt)}</span></div>
+                <div class="ticket-header">SALES CLOSING REPORT<br><small>สรุปยอดขายประจำวัน</small></div>
+                <div class="ticket-meta"><span>วันที่</span><strong>${escapeHtml(s.date)}</strong></div>
+                <div class="ticket-meta"><span>สถานะ</span><strong>${s.closed ? `ปิดรอบแล้ว ${escapeHtml(closedTime)}` : 'ยังไม่ปิดรอบ'}</strong></div>
+                <div class="ticket-meta"><span>พิมพ์เวลา</span><span>${escapeHtml(printedAt)}</span></div>
                 <div class="ticket-items">
-                    <div class="ticket-meta"><strong>เธขเธญเธ”เธเธฒเธขเธฃเธงเธก</strong><strong>เธฟ${escapeHtml(formatMoney(s.totalSales))}</strong></div>
-                    <div class="ticket-meta"><span>เธญเธญเน€เธ”เธญเธฃเนเธชเธณเน€เธฃเนเธ</span><span>${Number(s.completedOrderCount) || 0}</span></div>
-                    <div class="ticket-meta"><span>เธญเธญเน€เธ”เธญเธฃเนเธขเธเน€เธฅเธดเธ</span><span>${Number(s.cancelledOrderCount) || 0}</span></div>
-                    <div class="ticket-meta"><span>เธญเธญเน€เธ”เธญเธฃเนเธเนเธฒเธ</span><span>${Number(s.pendingOrderCount) || 0}</span></div>
-                    <div class="ticket-meta"><span>เนเธกเนเธกเธตเธฃเธฒเธเธฒ</span><span>${Number(s.ordersWithoutAmount) || 0}</span></div>
+                    <div class="ticket-meta"><strong>ยอดขายรวม</strong><strong>฿${escapeHtml(formatMoney(s.totalSales))}</strong></div>
+                    <div class="ticket-meta"><span>ออเดอร์สำเร็จ</span><span>${Number(s.completedOrderCount) || 0}</span></div>
+                    <div class="ticket-meta"><span>ออเดอร์ยกเลิก</span><span>${Number(s.cancelledOrderCount) || 0}</span></div>
+                    <div class="ticket-meta"><span>ออเดอร์ค้าง</span><span>${Number(s.pendingOrderCount) || 0}</span></div>
+                    <div class="ticket-meta"><span>ไม่มีราคา</span><span>${Number(s.ordersWithoutAmount) || 0}</span></div>
                 </div>
-                <div class="ticket-items"><strong>เธเนเธญเธเธ—เธฒเธเธเธณเธฃเธฐเน€เธเธดเธ</strong>
-                    ${payments.length ? payments.map(p => `<div class="ticket-meta"><span>${escapeHtml(p)}</span><span>เธฟ${escapeHtml(formatMoney(s.paymentTotals[p]))}</span></div>`).join('') : '<div class="ticket-meta"><span>-</span></div>'}
+                <div class="ticket-items"><strong>ช่องทางชำระเงิน</strong>
+                    ${payments.length ? payments.map(p => `<div class="ticket-meta"><span>${escapeHtml(p)}</span><span>฿${escapeHtml(formatMoney(s.paymentTotals[p]))}</span></div>`).join('') : '<div class="ticket-meta"><span>-</span></div>'}
                 </div>
-                <div class="ticket-items"><strong>เธฃเธฒเธขเธเธฒเธฃเธขเธเน€เธฅเธดเธ (${cancelledItems.length})</strong>
-                    ${cancelledItems.length ? `<ol>${cancelledItems.map(c => `<li>เธซเนเธญเธ ${escapeHtml(c.room)} ยท ${escapeHtml(c.name)}${c.quantity ? ` ร—${c.quantity}` : ''} โ€” ${escapeHtml(c.reason || '-')}</li>`).join('')}</ol>` : '<div>เนเธกเนเธกเธต</div>'}
+                <div class="ticket-items"><strong>รายการยกเลิก (${cancelledItems.length})</strong>
+                    ${cancelledItems.length ? `<ol>${cancelledItems.map(c => `<li>ห้อง ${escapeHtml(c.room)} · ${escapeHtml(c.name)}${c.quantity ? ` ×${c.quantity}` : ''} — ${escapeHtml(c.reason || '-')}</li>`).join('')}</ol>` : '<div>ไม่มี</div>'}
                 </div>
-                <div class="ticket-note">เธฅเธเธเธทเนเธญเธเธนเนเธเธดเธ”เธฃเธญเธ ____________________</div>`;
+                <div class="ticket-note">ลงชื่อผู้ปิดรอบ ____________________</div>`;
 
             document.title = `SALES-${s.date}`;
             document.body.classList.add('printing-order');
@@ -1256,8 +1256,8 @@
         updateClock();
         setInterval(updateClock, 15000);
         fetchOrders();
-        setInterval(fetchOrders, 5000); // เธ”เธถเธเธเนเธญเธกเธนเธฅเธญเธฑเธเน€เธ”เธ•เธ—เธธเธ 5 เธงเธดเธเธฒเธ—เธต
-// ========== Monthly Sales Report (เธเธดเธ”เธฃเธญเธเธฃเธฒเธขเน€เธ”เธทเธญเธ) ==========
+        setInterval(fetchOrders, 5000); // ดึงข้อมูลอัปเดตทุก 5 วินาที
+// ========== Monthly Sales Report (ปิดรอบรายเดือน) ==========
 let monthlySummary = null;
 let monthlyBusy = false;
 let monthlyYearSelect = null;
@@ -1296,13 +1296,13 @@ function initMonthYearSelectors() {
     for (let y = currentYear - 2; y <= currentYear + 1; y++) {
         const opt = document.createElement('option');
         opt.value = y;
-        opt.textContent = y + " เธเธต";
+        opt.textContent = y + " ปี";
         if (y === currentYear) opt.selected = true;
         monthlyYearSelect.appendChild(opt);
     }
 
     monthlyMonthSelect.innerHTML = '';
-    const monthNamesThai = ['เธก.เธ.', 'เธ.เธ.', 'เธกเธต.เธ.', 'เน€เธก.เธข.', 'เธ.เธ.', 'เธกเธด.เธข.', 'เธ.เธ.', 'เธช.เธ.', 'เธ.เธข.', 'เธ•.เธ.', 'เธ.เธข.', 'เธ.เธ.'];
+    const monthNamesThai = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
     for (let m = 1; m <= 12; m++) {
         const opt = document.createElement('option');
         opt.value = m;
@@ -1343,7 +1343,7 @@ function cancelledItemsForMonth(year, month) {
 
 function setMonthlySalesError(message) {
     const el = document.getElementById('monthly-sales-error');
-    el.textContent = message ? 'โ ๏ธ ' + message : '';
+    el.textContent = message ? '⚠️ ' + message : '';
     el.classList.toggle('hidden', !message);
 }
 
@@ -1358,7 +1358,7 @@ function updateCloseMonthButton() {
         monthlySummary.year === bk.year && monthlySummary.month === bk.month);
 
     btn.classList.toggle('is-closed', closed);
-    label.innerText = closed ? 'เธเธดเธ”เธฃเธญเธเธฃเธฒเธขเน€เธ”เธทเธญเธ ยท เธเธดเธ”เนเธฅเนเธง' : 'เธเธดเธ”เธฃเธญเธเธฃเธฒเธขเน€เธ”เธทเธญเธ';
+    label.innerText = closed ? 'ปิดรอบรายเดือน · ปิดแล้ว' : 'ปิดรอบรายเดือน';
 }
 
 async function openMonthlySalesReport() {
@@ -1378,10 +1378,10 @@ async function openMonthlySalesReport() {
         const text = await response.text();
         let data;
         try { data = JSON.parse(text); } catch (e) {
-            throw new Error('Apps Script เนเธกเนเนเธ”เนเธ•เธญเธเธเธฅเธฑเธเน€เธเนเธ JSON');
+            throw new Error('Apps Script ไม่ได้ตอบกลับเป็น JSON');
         }
         if (data.status !== 'success' || !data.summary) {
-            throw new Error(translateApiError(data.message) || 'เนเธซเธฅเธ”เธชเธฃเธธเธเธขเธญเธ”เธเธฒเธขเธฃเธฒเธขเน€เธ”เธทเธญเธเนเธกเนเธชเธณเน€เธฃเนเธ');
+            throw new Error(translateApiError(data.message) || 'โหลดสรุปยอดขายรายเดือนไม่สำเร็จ');
         }
         monthlySummary = data.summary;
         renderMonthlySalesReport();
@@ -1405,19 +1405,19 @@ async function confirmCloseMonthlySales() {
     const missing = Number(s.ordersWithoutAmount) || 0;
     if (pending > 0 || missing > 0) {
         const msg = [];
-        if (pending > 0) msg.push('เธกเธตเธขเธญเธ”เธเนเธฒเธ ' + pending + ' เธญเธญเน€เธ”เธญเธฃเน');
-        if (missing > 0) msg.push('เธกเธต ' + missing + ' เธญเธญเน€เธ”เธญเธฃเนเนเธกเนเธกเธตเธฃเธฒเธเธฒ');
-        if (!window.confirm('เนเธกเนเธชเธฒเธกเธฒเธฃเธ–เธเธดเธ”เธฃเธญเธเนเธ”เนเน€เธเธทเนเธญเธเธเธฒเธ:\\n' + msg.join('\\\\n') + '\\n\\nเธ”เธณเน€เธเธดเธเธเธฒเธฃเธ•เนเธญเธซเธฃเธทเธญเนเธกเน?')) return;
+        if (pending > 0) msg.push('มียอดค้าง ' + pending + ' ออเดอร์');
+        if (missing > 0) msg.push('มี ' + missing + ' ออเดอร์ไม่มีราคา');
+        if (!window.confirm('ไม่สามารถปิดรอบได้เนื่องจาก:\\n' + msg.join('\\\\n') + '\\n\\nดำเนินการต่อหรือไม่?')) return;
     }
 
     const message = [
-        'เธขเธทเธเธขเธฑเธเธเธดเธ”เธฃเธญเธเธฃเธฒเธขเน€เธ”เธทเธญเธ ' + formatThaiMonth(s.year, s.month) + ' เธซเธฃเธทเธญเนเธกเน?',
+        'ยืนยันปิดรอบรายเดือน ' + formatThaiMonth(s.year, s.month) + ' หรือไม่?',
         '',
-        'เธขเธญเธ”เธเธฒเธขเธฃเธงเธก: ' + formatMoney(s.totalSales),
-        'เธญเธญเน€เธ”เธญเธฃเนเธชเธณเน€เธฃเนเธ: ' + (Number(s.completedOrderCount) || 0),
-        'เธญเธญเน€เธ”เธญเธฃเนเธขเธเน€เธฅเธดเธ: ' + (Number(s.cancelledOrderCount) || 0),
+        'ยอดขายรวม: ' + formatMoney(s.totalSales),
+        'ออเดอร์สำเร็จ: ' + (Number(s.completedOrderCount) || 0),
+        'ออเดอร์ยกเลิก: ' + (Number(s.cancelledOrderCount) || 0),
         '',
-        'โ ๏ธ เน€เธกเธทเนเธญเธเธดเธ”เธฃเธญเธเนเธฅเนเธงเธเธฐเนเธกเนเธชเธฒเธกเธฒเธฃเธ–เน€เธเธฅเธตเนเธขเธเนเธเธฅเธเธเนเธญเธกเธนเธฅเน€เธ”เธทเธญเธเธเธตเนเนเธ”เนเธญเธตเธ'
+        '⚠️ เมื่อปิดรอบแล้วจะไม่สามารถเปลี่ยนแปลงข้อมูลเดือนนี้ได้อีก'
     ].join('\\n');
     if (!window.confirm(message)) return;
 
@@ -1433,7 +1433,7 @@ async function confirmCloseMonthlySales() {
             year: s.year,
             month: s.month,
             token: token
-        }, 'เธเธดเธ”เธฃเธญเธเธฃเธฒเธขเน€เธ”เธทเธญเธเนเธกเนเธชเธณเน€เธฃเนเธ');
+        }, 'ปิดรอบรายเดือนไม่สำเร็จ');
         monthlySummary = result.summary || Object.assign({}, s, { closed: true, closedAt: new Date().toISOString() });
     } catch (error) {
         console.error('Close Monthly Sales Error:', error);
@@ -1457,35 +1457,35 @@ function printMonthlySalesReport() {
 
     const daily = s.dailyBreakdown || [];
     const dailyRows = daily.map(function(d) {
-        return '<div class="ticket-meta"><span>' + escapeHtml(d.day) + '</span><span>เธฟ' + escapeHtml(formatMoney(d.total)) + '</span></div>';
+        return '<div class="ticket-meta"><span>' + escapeHtml(d.day) + '</span><span>฿' + escapeHtml(formatMoney(d.total)) + '</span></div>';
     }).join('');
 
     ticket.innerHTML = '' +
-        '<div class="ticket-header">MONTHLY SALES REPORT<br><small>เธฃเธฒเธขเธเธฒเธเธขเธญเธ”เธเธฒเธขเธฃเธฒเธขเน€เธ”เธทเธญเธ</small></div>' +
-        '<div class="ticket-meta"><span>เน€เธ”เธทเธญเธเธเธต</span><strong>' + escapeHtml(formatThaiMonth(s.year, s.month)) + '</strong></div>' +
-        '<div class="ticket-meta"><span>เธชเธ–เธฒเธเธฐ</span><strong>' + (s.closed ? 'เธเธดเธ”เธฃเธญเธเนเธฅเนเธง ' + escapeHtml(closedTime) : 'เธขเธฑเธเนเธกเนเธเธดเธ”เธฃเธญเธ') + '</strong></div>' +
-        '<div class="ticket-meta"><span>เธเธดเธกเธเนเน€เธกเธทเนเธญ</span><span>' + escapeHtml(printedAt) + '</span></div>' +
+        '<div class="ticket-header">MONTHLY SALES REPORT<br><small>รายงานยอดขายรายเดือน</small></div>' +
+        '<div class="ticket-meta"><span>เดือนปี</span><strong>' + escapeHtml(formatThaiMonth(s.year, s.month)) + '</strong></div>' +
+        '<div class="ticket-meta"><span>สถานะ</span><strong>' + (s.closed ? 'ปิดรอบแล้ว ' + escapeHtml(closedTime) : 'ยังไม่ปิดรอบ') + '</strong></div>' +
+        '<div class="ticket-meta"><span>พิมพ์เมื่อ</span><span>' + escapeHtml(printedAt) + '</span></div>' +
         '<div class="ticket-items">' +
-        '<div class="ticket-meta"><strong>เธขเธญเธ”เธเธฒเธขเธฃเธงเธก</strong><strong>เธฟ' + escapeHtml(formatMoney(s.totalSales)) + '</strong></div>' +
-        '<div class="ticket-meta"><span>เธญเธญเน€เธ”เธญเธฃเนเธชเธณเน€เธฃเนเธ</span><span>' + (Number(s.completedOrderCount) || 0) + '</span></div>' +
-        '<div class="ticket-meta"><span>เธญเธญเน€เธ”เธญเธฃเนเธขเธเน€เธฅเธดเธ</span><span>' + (Number(s.cancelledOrderCount) || 0) + '</span></div>' +
-        '<div class="ticket-meta"><span>เธญเธญเน€เธ”เธญเธฃเนเธเนเธฒเธ</span><span>' + (Number(s.pendingOrderCount) || 0) + '</span></div>' +
-        '<div class="ticket-meta"><span>เนเธกเนเธกเธตเธฃเธฒเธเธฒ</span><span>' + (Number(s.ordersWithoutAmount) || 0) + '</span></div>' +
+        '<div class="ticket-meta"><strong>ยอดขายรวม</strong><strong>฿' + escapeHtml(formatMoney(s.totalSales)) + '</strong></div>' +
+        '<div class="ticket-meta"><span>ออเดอร์สำเร็จ</span><span>' + (Number(s.completedOrderCount) || 0) + '</span></div>' +
+        '<div class="ticket-meta"><span>ออเดอร์ยกเลิก</span><span>' + (Number(s.cancelledOrderCount) || 0) + '</span></div>' +
+        '<div class="ticket-meta"><span>ออเดอร์ค้าง</span><span>' + (Number(s.pendingOrderCount) || 0) + '</span></div>' +
+        '<div class="ticket-meta"><span>ไม่มีราคา</span><span>' + (Number(s.ordersWithoutAmount) || 0) + '</span></div>' +
         '</div>' +
-        '<div class="ticket-items"><strong>เธขเธญเธ”เธเธฒเธขเนเธขเธเธฃเธฒเธขเธงเธฑเธ</strong>' +
+        '<div class="ticket-items"><strong>ยอดขายแยกรายวัน</strong>' +
         (dailyRows || '<div>-</div>') +
         '</div>' +
-        '<div class="ticket-items"><strong>เธเนเธญเธเธ—เธฒเธเธเธณเธฃเธฐเน€เธเธดเธ</strong>' +
+        '<div class="ticket-items"><strong>ช่องทางชำระเงิน</strong>' +
         (payments.length ? payments.map(function(p) {
-            return '<div class="ticket-meta"><span>' + escapeHtml(p) + '</span><span>เธฟ' + escapeHtml(formatMoney(s.paymentTotals[p])) + '</span></div>';
+            return '<div class="ticket-meta"><span>' + escapeHtml(p) + '</span><span>฿' + escapeHtml(formatMoney(s.paymentTotals[p])) + '</span></div>';
         }).join('') : '<div>-</div>') +
         '</div>' +
-        '<div class="ticket-items"><strong>เธฃเธฒเธขเธเธฒเธฃเธขเธเน€เธฅเธดเธ (' + cancelledItems.length + ')</strong>' +
+        '<div class="ticket-items"><strong>รายการยกเลิก (' + cancelledItems.length + ')</strong>' +
         (cancelledItems.length ? '<ol>' + cancelledItems.map(function(c) {
-            return '<li>เธซเนเธญเธ ' + escapeHtml(c.room) + ' ยท ' + escapeHtml(c.name) + (c.quantity ? ' ร—' + c.quantity : '') + ' โ€” ' + escapeHtml(c.reason || '-') + '</li>';
-        }).join('') + '</ol>' : '<div>เนเธกเนเธกเธต</div>') +
+            return '<li>ห้อง ' + escapeHtml(c.room) + ' · ' + escapeHtml(c.name) + (c.quantity ? ' ×' + c.quantity : '') + ' — ' + escapeHtml(c.reason || '-') + '</li>';
+        }).join('') + '</ol>' : '<div>ไม่มี</div>') +
         '</div>' +
-        '<div class="ticket-note">เธเธนเนเธเธดเธ”เธฃเธญเธ ____________________</div>';
+        '<div class="ticket-note">ผู้ปิดรอบ ____________________</div>';
 
     document.title = 'MONTHLY-' + s.year + '-' + String(s.month).padStart(2, '0');
     document.body.classList.add('printing-order');
@@ -1503,7 +1503,7 @@ function renderMonthlySalesReport() {
     const printBtn = document.getElementById('monthly-print-btn');
     const s = monthlySummary;
     if (!s) {
-        body.innerHTML = '<div class="report-loading">เธเธณเธฅเธฑเธเนเธซเธฅเธ”เธชเธฃเธธเธเธขเธญเธ”โ€ฆ</div>';
+        body.innerHTML = '<div class="report-loading">กำลังโหลดสรุปยอด…</div>';
         closeBtn.disabled = true;
         printBtn.disabled = true;
         return;
@@ -1516,65 +1516,65 @@ function renderMonthlySalesReport() {
     const closedTime = formatBangkokTime(s.closedAt);
     const daily = s.dailyBreakdown || [];
 
-    document.getElementById('monthly-sales-date').innerText = 'เธขเธญเธ”เธเธฒเธขเธเธฃเธฐเธเธณเน€เธ”เธทเธญเธ ' + formatThaiMonth(s.year, s.month);
+    document.getElementById('monthly-sales-date').innerText = 'ยอดขายประจำเดือน ' + formatThaiMonth(s.year, s.month);
 
     const blockers = [];
-    if (pending > 0) blockers.push('เธกเธตเธขเธญเธ”เธเนเธฒเธ ' + pending + ' เธญเธญเน€เธ”เธญเธฃเน โ€” เธ”เธณเน€เธเธดเธเธเธฒเธฃเน€เธชเธดเธฃเนเธเธซเธฃเธทเธญเธขเธเน€เธฅเธดเธเนเธซเนเธเธฃเธเธเนเธญเธเธเธดเธ”เธฃเธญเธ');
-    if (missing > 0) blockers.push('เธกเธต ' + missing + ' เธญเธญเน€เธ”เธญเธฃเนเนเธกเนเธกเธตเธฃเธฒเธเธฒ โ€” เนเธเนเนเธเธฃเธฒเธเธฒเนเธ Sheets เธเนเธญเธเธเธดเธ”เธฃเธญเธ');
+    if (pending > 0) blockers.push('มียอดค้าง ' + pending + ' ออเดอร์ — ดำเนินการเสิร์ฟหรือยกเลิกให้ครบก่อนปิดรอบ');
+    if (missing > 0) blockers.push('มี ' + missing + ' ออเดอร์ไม่มีราคา — แก้ไขราคาใน Sheets ก่อนปิดรอบ');
 
     const dailyRowsHtml = daily.length
         ? daily.map(function(d) {
-            return '<tr><td>' + escapeHtml(d.day) + '</td><td class="num">เธฟ' + escapeHtml(formatMoney(d.total)) + '</td><td class="num muted">' + (Number(d.completed || 0)) + '</td></tr>';
+            return '<tr><td>' + escapeHtml(d.day) + '</td><td class="num">฿' + escapeHtml(formatMoney(d.total)) + '</td><td class="num muted">' + (Number(d.completed || 0)) + '</td></tr>';
         }).join('')
-        : '<tr><td class="muted" colspan="3">เนเธกเนเธกเธตเธขเธญเธ”เธเธฒเธขเนเธเน€เธ”เธทเธญเธเธเธตเน</td></tr>';
+        : '<tr><td class="muted" colspan="3">ไม่มียอดขายในเดือนนี้</td></tr>';
 
     body.innerHTML = '' +
         '<span class="report-status ' + (s.closed ? 'closed' : 'open') + '">' +
-        (s.closed ? 'โ” เธเธดเธ”เธฃเธญเธเธฃเธฒเธขเน€เธ”เธทเธญเธเนเธฅเนเธง' + (closedTime ? ' เน€เธโฌเน€เธเธเน€เธเธ…เน€เธเธ’ ' + escapeHtml(closedTime) + ' เธ.' : '') : 'โ  เธขเธฑเธเนเธกเนเนเธ”เนเธเธดเธ”เธฃเธญเธเน€เธ”เธทเธญเธ (เธขเธฑเธเธชเธฒเธกเธฒเธฃเธ–เนเธเนเนเธเนเธ”เน)') +
+        (s.closed ? '✔ ปิดรอบรายเดือนแล้ว' + (closedTime ? ' เวลา ' + escapeHtml(closedTime) + ' น.' : '') : '⚠ ยังไม่ได้ปิดรอบเดือน (ยังสามารถแก้ไขได้)') +
         '</span>' +
         '<div class="report-grid" style="margin-top:12px">' +
-        '<div class="kpi total"><span class="label">เธขเธญเธ”เธเธฒเธขเธฃเธงเธกเน€เธ”เธทเธญเธ (เธญเธญเน€เธ”เธญเธฃเนเธชเธณเน€เธฃเนเธ)</span><span class="num">เธฟ' + escapeHtml(formatMoney(s.totalSales)) + '</span></div>' +
-        '<div class="kpi"><span class="label">เธญเธญเน€เธ”เธญเธฃเนเธชเธณเน€เธฃเนเธ</span><span class="num">' + (Number(s.completedOrderCount) || 0) + '</span></div>' +
-        '<div class="kpi"><span class="label">เธญเธญเน€เธ”เธญเธฃเนเธขเธเน€เธฅเธดเธ</span><span class="num">' + (Number(s.cancelledOrderCount) || 0) + '</span></div>' +
-        '<div class="kpi' + (pending ? ' is-late' : '') + '"><span class="label">เธญเธญเน€เธ”เธญเธฃเนเธเนเธฒเธ</span><span class="num">' + pending + '</span></div>' +
-        '<div class="kpi' + (missing ? ' is-warn' : '') + '"><span class="label">เนเธกเนเธกเธตเธฃเธฒเธเธฒ</span><span class="num">' + missing + '</span></div>' +
+        '<div class="kpi total"><span class="label">ยอดขายรวมเดือน (ออเดอร์สำเร็จ)</span><span class="num">฿' + escapeHtml(formatMoney(s.totalSales)) + '</span></div>' +
+        '<div class="kpi"><span class="label">ออเดอร์สำเร็จ</span><span class="num">' + (Number(s.completedOrderCount) || 0) + '</span></div>' +
+        '<div class="kpi"><span class="label">ออเดอร์ยกเลิก</span><span class="num">' + (Number(s.cancelledOrderCount) || 0) + '</span></div>' +
+        '<div class="kpi' + (pending ? ' is-late' : '') + '"><span class="label">ออเดอร์ค้าง</span><span class="num">' + pending + '</span></div>' +
+        '<div class="kpi' + (missing ? ' is-warn' : '') + '"><span class="label">ไม่มีราคา</span><span class="num">' + missing + '</span></div>' +
         '</div>' +
 
         '<div class="report-section">' +
-        '<h3>เธขเธญเธ”เธเธฒเธขเนเธขเธเธฃเธฒเธขเธงเธฑเธเนเธเน€เธ”เธทเธญเธ</h3>' +
+        '<h3>ยอดขายแยกรายวันในเดือน</h3>' +
         '<table class="report-table">' +
-        '<tr><td style="font-weight:600">เธงเธฑเธเธ—เธตเน</td><td style="font-weight:600; text-align:right">เธขเธญเธ”เธเธฒเธข</td><td style="font-weight:600; text-align:right">เธญเธญเน€เธ”เธญเธฃเน</td></tr>' +
+        '<tr><td style="font-weight:600">วันที่</td><td style="font-weight:600; text-align:right">ยอดขาย</td><td style="font-weight:600; text-align:right">ออเดอร์</td></tr>' +
         dailyRowsHtml +
         '</table>' +
         '</div>' +
 
         '<div class="report-section">' +
-        '<h3>เธเนเธญเธเธ—เธฒเธเธเธฒเธฃเธเธณเธฃเธฐเน€เธเธดเธ</h3>' +
+        '<h3>ช่องทางการชำระเงิน</h3>' +
         '<table class="report-table">' +
         (payments.length
             ? payments.map(function(p) {
-                return '<tr><td>' + escapeHtml(p) + '</td><td class="num">เธฟ' + escapeHtml(formatMoney(s.paymentTotals[p])) + '</td></tr>';
+                return '<tr><td>' + escapeHtml(p) + '</td><td class="num">฿' + escapeHtml(formatMoney(s.paymentTotals[p])) + '</td></tr>';
             }).join('')
-            : '<tr><td class="muted">เนเธกเนเธกเธตเธขเธญเธ”เธเธฒเธขเธเนเธฒเธเธเนเธญเธเธ—เธฒเธเนเธ”</td><td></td></tr>') +
+            : '<tr><td class="muted">ไม่มียอดขายผ่านช่องทางใด</td><td></td></tr>') +
         '</table>' +
         '</div>' +
 
         '<div class="report-section">' +
-        '<h3>เธฃเธฒเธขเธเธฒเธฃเธขเธเน€เธฅเธดเธเนเธเน€เธ”เธทเธญเธ (' + cancelledItems.length + ')</h3>' +
+        '<h3>รายการยกเลิกในเดือน (' + cancelledItems.length + ')</h3>' +
         '<table class="report-table">' +
         (cancelledItems.length
             ? cancelledItems.map(function(c) {
-                return '<tr><td>เธซเนเธญเธ ' + escapeHtml(c.room) + ' ยท ' + escapeHtml(c.name) + (c.quantity ? ' ร—' + c.quantity : '') + '</td><td class="muted">' + escapeHtml(c.reason || '-') + '</td></tr>';
+                return '<tr><td>ห้อง ' + escapeHtml(c.room) + ' · ' + escapeHtml(c.name) + (c.quantity ? ' ×' + c.quantity : '') + '</td><td class="muted">' + escapeHtml(c.reason || '-') + '</td></tr>';
             }).join('')
-            : '<tr><td class="muted">เนเธกเนเธกเธตเธฃเธฒเธขเธเธฒเธฃเธขเธเน€เธฅเธดเธ</td><td></td></tr>') +
+            : '<tr><td class="muted">ไม่มีรายการยกเลิก</td><td></td></tr>') +
         '</table>' +
         '</div>' +
 
         (!s.closed && blockers.length ? '<div class="notice is-block">' + blockers.map(escapeHtml).join('<br>') + '</div>' : '') +
-        '<div class="notice">เธขเธญเธ”เธเธฒเธขเธฃเธงเธกเน€เธ”เธทเธญเธเธเธณเธเธงเธ“เธเธฒเธเธญเธญเน€เธ”เธญเธฃเนเธ—เธตเนเธชเธณเน€เธฃเนเธเนเธฅเนเธง โ€” เธเธฅเธดเธ "เน€เธชเธดเธฃเนเธเนเธฅเนเธง" เธซเธฃเธทเธญ "เธขเธเน€เธฅเธดเธ" เนเธซเนเธเธฃเธเธ—เธธเธเธฃเธฒเธขเธเธฒเธฃเธเนเธญเธเธเธดเธ”เธฃเธญเธเน€เธ”เธทเธญเธ' + (s.closed ? '' : ' เธซเธฃเธทเธญเธเธ” "เธขเธทเธเธขเธฑเธเธเธดเธ”เธฃเธญเธเน€เธ”เธทเธญเธ" เน€เธเธทเนเธญเธขเธทเธเธขเธฑเธเธเธฒเธฃเธเธดเธ”เธฃเธญเธ') + '</div>';
+        '<div class="notice">ยอดขายรวมเดือนคำนวณจากออเดอร์ที่สำเร็จแล้ว — คลิก "เสิร์ฟแล้ว" หรือ "ยกเลิก" ให้ครบทุกรายการก่อนปิดรอบเดือน' + (s.closed ? '' : ' หรือกด "ยืนยันปิดรอบเดือน" เพื่อยืนยันการปิดรอบ') + '</div>';
 
     closeBtn.disabled = monthlyBusy || !!s.closed || blockers.length > 0;
-    closeBtn.innerText = monthlyBusy ? 'เธเธณเธฅเธฑเธเธเธดเธ”เธฃเธญเธเน€เธ”เธทเธญเธโ€ฆ' : (s.closed ? 'เธเธดเธ”เธฃเธญเธเนเธฅเนเธง' : 'เธขเธทเธเธขเธฑเธเธเธดเธ”เธฃเธญเธเน€เธ”เธทเธญเธ');
+    closeBtn.innerText = monthlyBusy ? 'กำลังปิดรอบเดือน…' : (s.closed ? 'ปิดรอบแล้ว' : 'ยืนยันปิดรอบเดือน');
     printBtn.disabled = monthlyBusy;
 }
 
