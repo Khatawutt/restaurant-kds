@@ -10,6 +10,13 @@
 const SHEET_ID = '1cqtqFcxvCM_l6aZpkscfP76ndsg5RyM7Qv92-Qmb_EU';
 const SHEET_GID = '1306309405';
 const KDS_ACTION_TOKEN_PROP = 'KDS_ACTION_TOKEN';
+const SLIP_FOLDER_NAME = 'MANA In-Room Slips';
+const SLIP_MAX_BYTES = 5 * 1024 * 1024;
+const SLIP_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const CANCEL_REASON_OPTIONS = ['เกินกำหนดเวลาชำระเงิน'];
+const PAYMENT_TIMEOUT_MS = 60 * 60 * 1000;
+const DAILY_SALES_TIMEZONE = 'Asia/Bangkok';
+const KDS_ITEM_CANCEL_REASON = 'ลูกค้าไม่เอาแล้ว';
 
 function doGet(e) {
   const action = e.parameter.action;
@@ -34,6 +41,8 @@ function doPost(e) {
     const data = JSON.parse(e.postData.contents);
     const action = data.action;
     switch (action) {
+      case 'uploadOrder':
+        return handleAppendOrder(data);
       case 'updateStatus':
         return handleUpdateStatus(data);
       case 'closeDailySales':
@@ -343,4 +352,77 @@ function emptyMonthlySummary(year, month) {
     cancelledOrderCount: 0, pendingOrderCount: 0, ordersWithoutAmount: 0,
     paymentTotals: {}, dailyBreakdown: [], closed: false, closedAt: null
   };
+}
+
+/* ========== Order Creation & Slip Upload ========== */
+
+function handleAppendOrder(data) {
+  const sheet = getSheet();
+  const props = PropertiesService.getScriptProperties();
+  const closedKey = 'daily_closed_' + bangkokDateKey(new Date());
+  if (props.getProperty(closedKey)) {
+    throw new Error('Sales for today are closed; new orders are not being accepted');
+  }
+
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const colMap = {};
+  headers.forEach((h, i) => { colMap[String(h).trim()] = i + 1; });
+
+  const orderId = String(data.orderId || Utilities.getUuid());
+  const room = String(data.roomNumber || data.room || '').trim();
+  const name = String(data.name || '').trim();
+  if (!room) throw new Error('Room is required');
+
+  const slipUrl = saveSlip_(data.slip, orderId);
+  const now = new Date();
+  const tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone();
+
+  const items = [];
+  if (Array.isArray(data.items) && data.items.length) {
+    data.items.forEach(item => {
+      const n = String(item && (item.name || item.menu) || '').trim();
+      const q = Number(item && (item.quantity == null ? item.qty : item.quantity));
+      if (!n || !Number.isInteger(q) || q < 1) {
+        throw new Error('Each item needs a name and a positive whole-number quantity');
+      }
+      items.push({ name: n, quantity: q });
+    });
+  } else {
+    const menu = String(data.menu || '').trim();
+    if (!menu) throw new Error('Order menu is required');
+    items.push({ name: menu, quantity: '' });
+  }
+
+  items.forEach((item, index) => {
+    const row = new Array(sheet.getLastColumn()).fill('');
+    if (colMap['Timestamp'] != null) row[colMap['Timestamp'] - 1] = now;
+    if (colMap['เวลา'] != null) row[colMap['เวลา'] - 1] = Utilities.formatDate(now, tz, 'HH:mm');
+    if (colMap['Room'] != null) row[colMap['Room'] - 1] = room;
+    if (colMap['ชื่อ'] != null) row[colMap['ชื่อ'] - 1] = name;
+    if (colMap['Menu Details'] != null) row[colMap['Menu Details'] - 1] = item.name;
+    if (colMap['จำนวน'] != null) row[colMap['จำนวน'] - 1] = item.quantity;
+    if (colMap['Price'] != null) row[colMap['Price'] - 1] = index === 0 ? (data.price == null ? '' : data.price) : '';
+    if (colMap['Status'] != null) row[colMap['Status'] - 1] = 'Pending';
+    if (colMap['Payment'] != null) row[colMap['Payment'] - 1] = String(data.payment || data.paymentMethod || '');
+    if (colMap['Order ID'] != null) row[colMap['Order ID'] - 1] = orderId;
+    if (colMap['Cancel Reason'] != null) row[colMap['Cancel Reason'] - 1] = '';
+    if (colMap['Slip'] != null) row[colMap['Slip'] - 1] = index === 0 ? slipUrl : '';
+    sheet.appendRow(row);
+  });
+  return json({ status: 'success', orderId: orderId, slip: slipUrl ? 'saved' : 'none' });
+}
+
+function saveSlip_(slip, orderId) {
+  if (!slip || !slip.data) return '';
+  const mime = String(slip.mime || 'image/jpeg').toLowerCase();
+  if (SLIP_MIME_TYPES.indexOf(mime) < 0) throw new Error('Slip must be a JPEG, PNG or WebP image');
+  const bytes = Utilities.base64Decode(String(slip.data).replace(/^data:[^,]*,/, ''));
+  if (!bytes || !bytes.length) throw new Error('Slip image is empty');
+  if (bytes.length > SLIP_MAX_BYTES) throw new Error('Slip image is larger than 5 MB');
+  const ext = mime === 'image/png' ? '.png' : (mime === 'image/webp' ? '.webp' : '.jpg');
+  const safeId = String(orderId || 'slip-' + Date.now()).replace(/[^\w.-]/g, '_');
+  const blob = Utilities.newBlob(bytes, mime, safeId + ext);
+  const folders = DriveApp.getFoldersByName(SLIP_FOLDER_NAME);
+  const folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(SLIP_FOLDER_NAME);
+  return folder.createFile(blob).getUrl();
 }
